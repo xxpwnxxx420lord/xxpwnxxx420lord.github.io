@@ -83,7 +83,7 @@ export default function Home() {
                 {" "}
                   {" "}
                 <p className="text-white/60">
-                  I code luau, python, and javascript (poorly) check out my github below!{" "}
+                  I code Luau, Python, and Javascript (poorly), I also make terrible UI's in Roblox Studio, check out my github below!{" "}
                 </p>{" "}
               </AnimatedText>{" "}
             </section>{" "}

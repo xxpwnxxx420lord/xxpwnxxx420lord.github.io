@@ -69,7 +69,7 @@ export default function Home() {
                 {" "}
                 <p className="text-white/60 mb-4">
                   {" "}
-                  I'm a developer and designer who loves to create things! I'm currently a student who lives in new south wales, australia!{" "}
+                  I'm a developer and designer who loves to create things! I'm currently a student who lives in New South Wales, Australia!{" "}
                 </p>{" "}
               </AnimatedText>{" "}
             </section>{" "}

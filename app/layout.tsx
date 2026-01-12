@@ -15,10 +15,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "syntaxical.zone.id",
-  description: "hi",
+// app/layout.js
+export const metadata = {
+  title: 'check out my website!',
+  description: 'hi im syntaxical', 
+  openGraph: {
+    title: 'hi im syntaxical!',
+    description: 'hi',
+  },
 };
+
 
 export default function RootLayout({
   children,

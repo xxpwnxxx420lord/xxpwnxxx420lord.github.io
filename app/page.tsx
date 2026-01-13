@@ -100,11 +100,11 @@ export default function Home() {
                   <li>
                     {" "}
                     <HoverLink
-                      href="#"
+                      href="https://barnical.github.io"
                       className="text-white/60 hover:text-white transition-colors"
                     >
                       {" "}
-                      Example Link{" "}
+                      Barnical!{" "}
                     </HoverLink>{" "}
                   </li>{" "}
                 </ul>{" "}

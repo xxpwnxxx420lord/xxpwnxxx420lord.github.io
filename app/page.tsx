@@ -4,7 +4,7 @@ import { HoverLink } from "@/components/ui/hover-link";
 import { SectionTitle } from "@/components/ui/section-title";
 import Dock from "@/components/Dock";
 import ShinyText from "@/components/ShinyText";
-import { FaGithub, FaYoutube, FaDiscord, FaGamepad } from "react-icons/fa";
+import { FaGithub, FaYoutube, FaDiscord, FaCube } from "react-icons/fa";
 export default function Home() {
   const dockItems = [
     {
@@ -20,7 +20,7 @@ export default function Home() {
         window.open("https://www.youtube.com/@Syntax1cal", "_blank"),
     },
     {
-      icon: <FaGamepad size={18} />,
+      icon: <FaCube size={18} />,
       label: "Roblox",
       onClick: () =>
         window.open(

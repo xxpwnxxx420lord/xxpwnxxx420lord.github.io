@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "syntaxical.zone.id",
-  description: "A minimal space for syntax and code",
+  title: "Hey! I'm Syntaxical!",
+  description: "I'm a man that codes",
 };
 
 export default function RootLayout({

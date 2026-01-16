@@ -1,32 +1,23 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+// app/api/blacklist/route.ts
+import { NextResponse } from 'next/server';
 
 type BlacklistEntry = { Username: string };
-let blacklist: BlacklistEntry[] = [];
+const blacklist: BlacklistEntry[] = [];
 
-type ResponseData = {
-  data: BlacklistEntry[];
-  error?: string;
-};
+export async function GET() {
+  return NextResponse.json({ data: blacklist });
+}
 
-export default function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
-) {
-  if (req.method === 'POST') {
-    const { Username } = req.body as { Username?: string };
-    if (!Username) return res.status(400).json({ data: [], error: 'No username provided' });
+export async function POST(req: Request) {
+  const body = await req.json() as { Username?: string };
 
-    // prevent duplicates
-    if (!blacklist.find(u => u.Username === Username)) {
-      blacklist.push({ Username });
-    }
-
-    return res.status(200).json({ data: blacklist });
+  if (!body.Username) {
+    return NextResponse.json({ data: [], error: 'No username provided' }, { status: 400 });
   }
 
-  if (req.method === 'GET') {
-    return res.status(200).json({ data: blacklist });
+  if (!blacklist.find(u => u.Username === body.Username)) {
+    blacklist.push({ Username: body.Username });
   }
 
-  return res.status(405).json({ data: [], error: 'Method not allowed' });
+  return NextResponse.json({ data: blacklist });
 }

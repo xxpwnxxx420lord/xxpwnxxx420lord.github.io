@@ -1,10 +1,7 @@
-// app/page.tsx
-"use client"; // needed only if using React hooks (optional here)
-
-export default function Page() {
-  return (
-    <main
-      <p>This is a single paragraph on a fully functional Next.js page.</p>
-    </main>
-  );
+// app/api/paragraph/route.ts
+export function GET() {
+  return new Response("This is a single paragraph from a TS file", {
+    status: 200,
+    headers: { "Content-Type": "text/plain" },
+  });
 }

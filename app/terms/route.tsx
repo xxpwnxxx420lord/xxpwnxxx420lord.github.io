@@ -1,6 +1,6 @@
-export default function Home() {
+export default function TermsPage() {
   return (
-    <main className="terms-container">
+    <div className="terms-container">
       <section>
         <h1>Advertiser Terms and Conditions</h1>
 
@@ -95,6 +95,6 @@ export default function Home() {
           Open a ticket in our Discord server. Provide business background, prior experience proof, and a clear plan for reselling.
         </p>
       </section>
-    </main>
+    </div>
   );
 }

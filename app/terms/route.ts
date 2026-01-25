@@ -6,7 +6,7 @@ These Advertiser Terms and Conditions ("Advertiser Terms") govern your participa
 
 Eligibility:
 1. Advertisers must have a minimum of 1,000 followers or subscribers.
-2. Approval is required prior to posting any advertisement.
+2. Advertising requires prior approval. Posting without approval does not qualify for any prize.
 3. We reserve the right to approve or deny any advertiser at our sole discretion.
 
 Advertising Requirements:

@@ -1,5 +1,3 @@
-import { NextResponse } from 'next/server';
-
 export async function GET() {
   const termsText = `
 ADVERTISER TERMS AND CONDITIONS
@@ -50,5 +48,7 @@ How to Apply:
 Open a ticket in our Discord server. Provide business background, prior experience proof, and a clear plan for reselling.
 `;
 
-  return NextResponse.json({ terms: termsText });
+  return new Response(termsText, {
+    headers: { 'Content-Type': 'text/plain' }
+  });
 }

@@ -32,7 +32,7 @@ function BlurText({ text, delay = 0, style }: { text: string; delay?: number; st
 function ScrambleText({ text, trigger, speed = 38 }: { text: string; trigger: boolean; speed?: number }) {
   const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$";
   const [display, setDisplay] = useState(text);
-  const frame = useRef(null);
+  const frame = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
   useEffect(() => {
     if (!trigger) { setDisplay(text); return; }
     let iter = 0;

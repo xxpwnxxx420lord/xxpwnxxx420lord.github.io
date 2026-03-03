@@ -51,10 +51,12 @@ function ScrambleText({ text, trigger, speed = 38 }: { text: string; trigger: bo
 
 // ─── PARTICLE CANVAS ───
 function ParticleCanvas() {
-  const ref = useRef(null);
+  const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = ref.current;
+    if (!canvas) return;
     const ctx = canvas.getContext("2d");
+    if (!ctx) return;
     let W = canvas.width = canvas.offsetWidth;
     let H = canvas.height = canvas.offsetHeight;
     const pts = Array.from({ length: 48 }, () => ({

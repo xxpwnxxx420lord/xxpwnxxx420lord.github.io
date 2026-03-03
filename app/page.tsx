@@ -1,4 +1,7 @@
+"use client";
+
 import { useState, useEffect, useRef, useCallback } from "react";
+import React from "react";
 
 // ─── BLUR TEXT ───
 function BlurText({ text, delay = 0, style }: { text: string; delay?: number; style?: React.CSSProperties }) {

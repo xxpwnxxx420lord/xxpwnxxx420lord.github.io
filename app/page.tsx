@@ -1,9 +1,7 @@
-"use client"
-
 import { useState, useEffect, useRef, useCallback } from "react";
 
 // ─── BLUR TEXT ───
-function BlurText({ text, delay = 0, style }) {
+function BlurText({ text, delay = 0, style }: { text: string; delay?: number; style?: React.CSSProperties }) {
   const words = text.split(" ");
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
@@ -28,7 +26,7 @@ function BlurText({ text, delay = 0, style }) {
 }
 
 // ─── SCRAMBLE TEXT ───
-function ScrambleText({ text, trigger, speed = 38 }) {
+function ScrambleText({ text, trigger, speed = 38 }: { text: string; trigger: boolean; speed?: number }) {
   const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$";
   const [display, setDisplay] = useState(text);
   const frame = useRef(null);
@@ -94,7 +92,7 @@ function ParticleCanvas() {
 }
 
 // ─── MAGNET ───
-function Magnet({ children, strength = 0.3 }) {
+function Magnet({ children, strength = 0.3 }: { children: React.ReactNode; strength?: number }) {
   const ref = useRef(null);
   const onMove = useCallback((e) => {
     const el = ref.current; if (!el) return;
@@ -113,7 +111,7 @@ function Magnet({ children, strength = 0.3 }) {
 }
 
 // ─── CLICK SPARK ───
-function ClickSpark({ children }) {
+function ClickSpark({ children }: { children: React.ReactNode }) {
   const [sparks, setSparks] = useState([]);
   const click = (e) => {
     const id = Date.now();
@@ -441,7 +439,7 @@ export default function Portfolio() {
 }
 
 // ─── SKILL BAR ───
-function SkillBar({ skill, delay }) {
+function SkillBar({ skill, delay }: { skill: { name: string; level: number }; delay: number }) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {

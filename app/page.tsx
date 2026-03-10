@@ -437,7 +437,7 @@ export default function Portfolio() {
             <span className="w-2 h-2 rounded-full bg-[#4caf7d] animate-pulse" />
             <span className="font-mono text-xs text-[#999]">sydney, au · available</span>
           </div>
-          <h1 className="text-6xl font-light tracking-tight mb-3 leading-none">Syntaxical</h1>
+          <h1 className="text-6xl font-light tracking-tight mb-3 leading-none">Johnny W</h1>
           <p className="text-xl text-[#bbb] font-light mb-4">
             LuaU, Node, and python 💝
           </p>

@@ -1,472 +1,627 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import React from "react";
+import dynamic from "next/dynamic";
+import { Card, CardBody } from "@heroui/react";
+import {
+  ArrowUpRight, Github, MessageCircle, Copy, Check,
+  Terminal, GitCommit, X, GitBranch, Clock, Shuffle,
+  BookOpen, Wrench,
+} from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 
-// ─── BLUR TEXT ───
-function BlurText({ text, delay = 0, style }: { text: string; delay?: number; style?: React.CSSProperties }) {
-  const words = text.split(" ");
-  const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true); }, { threshold: 0.2 });
-    if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, []);
+const LiquidEther = dynamic(() => import("./LiquidEther"), { ssr: false });
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface Commit {
+  sha: string;
+  commit: {
+    message: string;
+    author: { name: string; date: string };
+  };
+  html_url: string;
+}
+
+interface GHEvent {
+  type: string;
+  repo: { name: string };
+  created_at: string;
+  payload: {
+    commits?: { message: string }[];
+    ref?: string;
+    action?: string;
+    ref_type?: string;
+  };
+}
+
+// ─── Data ─────────────────────────────────────────────────────────────────────
+
+const SKILLS = [
+  { label: "LuaU", pct: 75, color: "#a78bfa" },
+  { label: "Python", pct: 37, color: "#60a5fa" },
+  { label: "JavaScript", pct: 17, color: "#fbbf24" },
+];
+
+const TOOLS = [
+  "Roblox Studio", "Three.js", "Next.js", "Node.js",
+  "WebSockets", "Git", "CSS / HTML", "Rojo",
+];
+
+const PROJECTS = [
+  {
+    title: "Framework",
+    description: "LuaU GUI Framework.",
+    tags: ["LuaU", "Roblox", "Scripting"],
+    href: "https://github.com/xxpwnxxx420lord/Scripts/blob/main/framework.lua",
+    owner: "xxpwnxxx420lord", repo: "Scripts", live: null,
+  },
+  {
+    title: "Nutho",
+    description: "Insanely good Roblox script (Discontinued).",
+    tags: ["LuaU", "Roblox", "Scripting"],
+    href: "https://github.com/xxpwnxxx420lord/Nutho",
+    owner: "xxpwnxxx420lord", repo: "Nutho", live: null,
+  },
+  {
+    title: "Dominion",
+    description: "WIP Roblox script with universal features for FPS/TPS games.",
+    tags: ["LuaU", "Roblox", "Scripting"],
+    href: "https://github.com/xxpwnxxx420lord/Dominion",
+    owner: "xxpwnxxx420lord", repo: "Dominion", live: null,
+  },
+  {
+    title: "Cmd-XYZ",
+    description: "Command framework built in LuaU. Modular design, easy to extend.",
+    tags: ["LuaU", "Framework"],
+    href: "https://github.com/xxpwnxxx420lord/Cmd-XYZ",
+    owner: "xxpwnxxx420lord", repo: "Cmd-XYZ", live: null,
+  },
+  {
+    title: "Discord ↔ Roblox Controller",
+    description: "WebSocket bridge linking Discord bots to Roblox game servers in real-time.",
+    tags: ["Python", "WebSocket", "Discord"],
+    href: "https://github.com/random-projects-coz-bored-and-ye/Websocket-Discord-bot",
+    owner: "random-projects-coz-bored-and-ye", repo: "Websocket-Discord-bot", live: null,
+  },
+  {
+    title: "websocketthing",
+    description: "JavaScript WebSocket experiment — lightweight, no deps, raw implementation.",
+    tags: ["JavaScript", "WebSocket"],
+    href: "https://github.com/xxpwnxxx420lord/websocketthing",
+    owner: "xxpwnxxx420lord", repo: "websocketthing", live: null,
+  },
+  {
+    title: "5-Letter Username Sniper",
+    description: "Automated Roblox 5-character username availability checker.",
+    tags: ["Python", "Roblox", "Automation"],
+    href: "https://github.com/abusingroblox/5-letter-name-sniper",
+    owner: "abusingroblox", repo: "5-letter-name-sniper", live: null,
+  },
+  {
+    title: "barnical",
+    description: "One of the best Unblocked games websites — Hollow Knight, Getting Over It, and more!",
+    tags: ["HTML", "CSS", "JavaScript"],
+    href: "https://github.com/barnical/barnical.github.io",
+    owner: "barnical", repo: "barnical.github.io", live: "https://barnical.github.io",
+  },
+];
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function timeAgo(dateStr: string) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  const hrs = Math.floor(mins / 60);
+  const days = Math.floor(hrs / 24);
+  if (days > 0) return `${days}d ago`;
+  if (hrs > 0) return `${hrs}h ago`;
+  if (mins > 0) return `${mins}m ago`;
+  return "just now";
+}
+
+function eventLabel(e: GHEvent): string {
+  switch (e.type) {
+    case "PushEvent":
+      return `pushed to ${e.repo.name.split("/")[1]}`;
+    case "CreateEvent":
+      return `created ${e.payload.ref_type} in ${e.repo.name.split("/")[1]}`;
+    case "WatchEvent":
+      return `starred ${e.repo.name}`;
+    case "ForkEvent":
+      return `forked ${e.repo.name}`;
+    case "IssuesEvent":
+      return `${e.payload.action} issue in ${e.repo.name.split("/")[1]}`;
+    case "PullRequestEvent":
+      return `${e.payload.action} PR in ${e.repo.name.split("/")[1]}`;
+    default:
+      return `activity in ${e.repo.name.split("/")[1]}`;
+  }
+}
+
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
+function SkillBar({ label, pct, color }: { label: string; pct: number; color: string }) {
   return (
-    <span ref={ref} style={{ display: "inline", ...style }}>
-      {words.map((w, i) => (
-        <span key={i} style={{
-          display: "inline-block", marginRight: "0.28em",
-          opacity: visible ? 1 : 0,
-          filter: visible ? "blur(0px)" : "blur(14px)",
-          transform: visible ? "translateY(0)" : "translateY(10px)",
-          transition: `opacity 0.55s ease ${delay + i * 0.07}s, filter 0.55s ease ${delay + i * 0.07}s, transform 0.45s ease ${delay + i * 0.07}s`,
-        }}>{w}</span>
-      ))}
-    </span>
-  );
-}
-
-// ─── SCRAMBLE TEXT ───
-function ScrambleText({ text, trigger, speed = 38 }: { text: string; trigger: boolean; speed?: number }) {
-  const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$";
-  const [display, setDisplay] = useState(text);
-  const frame = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
-  useEffect(() => {
-    if (!trigger) { setDisplay(text); return; }
-    let iter = 0;
-    clearInterval(frame.current);
-    frame.current = setInterval(() => {
-      setDisplay(text.split("").map((ch, i) =>
-        ch === " " ? " " : i < iter ? text[i] : CHARS[Math.floor(Math.random() * CHARS.length)]
-      ).join(""));
-      iter += 0.45;
-      if (iter >= text.length) clearInterval(frame.current);
-    }, speed);
-    return () => clearInterval(frame.current);
-  }, [trigger, text]);
-  return <span>{display}</span>;
-}
-
-// ─── PARTICLE CANVAS ───
-function ParticleCanvas() {
-  const ref = useRef<HTMLCanvasElement>(null);
-  useEffect(() => {
-    const canvas = ref.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    let W = canvas.width = canvas.offsetWidth;
-    let H = canvas.height = canvas.offsetHeight;
-    const pts = Array.from({ length: 48 }, () => ({
-      x: Math.random() * W, y: Math.random() * H,
-      r: Math.random() * 1.2 + 0.3,
-      vx: (Math.random() - 0.5) * 0.25,
-      vy: (Math.random() - 0.5) * 0.25,
-      o: Math.random() * 0.35 + 0.1,
-    }));
-    let raf;
-    const draw = () => {
-      ctx.clearRect(0, 0, W, H);
-      pts.forEach(p => {
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(139,233,149,${p.o})`; ctx.fill();
-        p.x += p.vx; p.y += p.vy;
-        if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
-        if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
-      });
-      for (let i = 0; i < pts.length; i++)
-        for (let j = i + 1; j < pts.length; j++) {
-          const dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
-          const d = Math.hypot(dx, dy);
-          if (d < 85) {
-            ctx.beginPath(); ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[j].x, pts[j].y);
-            ctx.strokeStyle = `rgba(139,233,149,${0.06 * (1 - d / 85)})`;
-            ctx.lineWidth = 0.5; ctx.stroke();
-          }
-        }
-      raf = requestAnimationFrame(draw);
-    };
-    draw();
-    const onResize = () => { W = canvas.width = canvas.offsetWidth; H = canvas.height = canvas.offsetHeight; };
-    window.addEventListener("resize", onResize);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", onResize); };
-  }, []);
-  return <canvas ref={ref} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }} />;
-}
-
-// ─── MAGNET ───
-function Magnet({ children, strength = 0.3 }: { children: React.ReactNode; strength?: number }) {
-  const ref = useRef(null);
-  const onMove = useCallback((e) => {
-    const el = ref.current; if (!el) return;
-    const r = el.getBoundingClientRect();
-    const dx = e.clientX - (r.left + r.width / 2);
-    const dy = e.clientY - (r.top + r.height / 2);
-    el.style.transform = `translate(${dx * strength}px,${dy * strength}px)`;
-  }, [strength]);
-  const onLeave = useCallback(() => { if (ref.current) ref.current.style.transform = "translate(0,0)"; }, []);
-  return (
-    <div ref={ref} onMouseMove={onMove} onMouseLeave={onLeave}
-      style={{ transition: "transform 0.35s cubic-bezier(.23,1,.32,1)", display: "inline-block" }}>
-      {children}
+    <div className="flex items-center gap-3">
+      <span className="font-mono text-xs text-[#f0ede8] w-24 shrink-0">{label}</span>
+      <div className="flex-1 h-[3px] bg-[#3a3a3a] rounded-full overflow-hidden">
+        <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: color }} />
+      </div>
+      <span className="font-mono text-xs text-[#555] w-8 text-right">{pct}%</span>
     </div>
   );
 }
 
-// ─── CLICK SPARK ───
-function ClickSpark({ children }: { children: React.ReactNode }) {
-  const [sparks, setSparks] = useState([]);
-  const click = (e) => {
-    const id = Date.now();
-    setSparks(s => [...s, { id, x: e.clientX, y: e.clientY }]);
-    setTimeout(() => setSparks(s => s.filter(sp => sp.id !== id)), 650);
+function CopyDiscordButton() {
+  const [copied, setCopied] = useState(false);
+  const handle = () => {
+    navigator.clipboard.writeText("discord.com/users/1184740148487925851");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <div onClick={click} style={{ display: "contents" }}>
-      {children}
-      {sparks.map(sp => (
-        <div key={sp.id} style={{ position: "fixed", left: sp.x, top: sp.y, pointerEvents: "none", zIndex: 9999 }}>
-          {[...Array(8)].map((_, i) => {
-            const a = (i / 8) * Math.PI * 2;
-            return <div key={i} style={{
-              position: "absolute", width: 3, height: 3, borderRadius: "50%",
-              background: "#8be995", animation: "spark 0.55s ease forwards",
-              "--dx": `${Math.cos(a) * 26}px`, "--dy": `${Math.sin(a) * 26}px`,
-            }} />;
-          })}
+    <button onClick={handle} className="flex items-center gap-2 px-4 py-2 rounded-md bg-[#2c2c2c] border border-[#3a3a3a] hover:border-[#555] text-[#888] hover:text-[#f0ede8] transition-all duration-200 font-mono text-xs cursor-pointer">
+      {copied ? <Check size={13} className="text-[#4caf7d]" /> : <Copy size={13} />}
+      {copied ? "copied!" : "copy link"}
+    </button>
+  );
+}
+
+// ─── Commit Modal ─────────────────────────────────────────────────────────────
+
+function CommitModal({ owner, repo, title, onClose }: {
+  owner: string; repo: string; title: string; onClose: () => void;
+}) {
+  const [commits, setCommits] = useState<Commit[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`/api/commits/${owner}/${repo}`)
+      .then((r) => r.json())
+      .then((d) => { setCommits(Array.isArray(d) ? d : []); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, [owner, repo]);
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center px-4" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <div
+        className="relative bg-[#1e1e1e] border border-[#3a3a3a] rounded-2xl w-full max-w-lg max-h-[70vh] flex flex-col overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#2e2e2e]">
+          <div className="flex items-center gap-2">
+            <GitBranch size={14} className="text-[#a78bfa]" />
+            <span className="font-mono text-sm text-[#f0ede8]">{title}</span>
+            <span className="font-mono text-xs text-[#555]">/ commits</span>
+          </div>
+          <button onClick={onClose} className="text-[#555] hover:text-[#f0ede8] transition-colors cursor-pointer">
+            <X size={16} />
+          </button>
         </div>
-      ))}
+
+        <div className="overflow-y-auto flex-1">
+          {loading ? (
+            <div className="p-6 space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-12 bg-[#2a2a2a] rounded-lg animate-pulse" />
+              ))}
+            </div>
+          ) : commits.length === 0 ? (
+            <div className="p-10 text-center font-mono text-xs text-[#444]">no commits found</div>
+          ) : (
+            <div className="divide-y divide-[#2a2a2a]">
+              {commits.map((c) => (
+                <a
+                  key={c.sha}
+                  href={c.html_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-3 px-6 py-4 hover:bg-[#252525] transition-colors group"
+                >
+                  <GitCommit size={13} className="text-[#555] mt-0.5 shrink-0 group-hover:text-[#a78bfa] transition-colors" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs text-[#ddd] leading-relaxed truncate">
+                      {c.commit.message.split("\n")[0]}
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="font-mono text-[10px] text-[#555]">{c.sha.slice(0, 7)}</span>
+                      <span className="text-[#3a3a3a]">·</span>
+                      <Clock size={10} className="text-[#444]" />
+                      <span className="font-mono text-[10px] text-[#555]">
+                        {timeAgo(c.commit.author.date)}
+                      </span>
+                    </div>
+                  </div>
+                  <ArrowUpRight size={12} className="text-[#444] group-hover:text-[#a78bfa] transition-colors shrink-0 mt-1" />
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
 
-// ─── CURSOR BLOB ───
-function CursorBlob() {
-  const ref = useRef(null);
+// ─── GitHub Activity ──────────────────────────────────────────────────────────
+
+function GitHubActivity() {
+  const [events, setEvents] = useState<GHEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const el = ref.current;
-    const move = (e) => { el.style.transform = `translate(${e.clientX - 140}px,${e.clientY - 140}px)`; };
-    window.addEventListener("mousemove", move);
-    return () => window.removeEventListener("mousemove", move);
+    fetch("/api/github-activity")
+      .then((r) => r.json())
+      .then((d) => { setEvents(Array.isArray(d) ? d.slice(0, 8) : []); setLoading(false); })
+      .catch(() => setLoading(false));
   }, []);
+
   return (
-    <div ref={ref} style={{
-      position: "fixed", top: 0, left: 0, width: 280, height: 280, borderRadius: "50%",
-      background: "radial-gradient(circle, rgba(139,233,149,0.06) 0%, transparent 70%)",
-      pointerEvents: "none", zIndex: 0, transition: "transform 0.1s ease",
-    }} />
+    <section>
+      <div className="flex items-center gap-3 mb-7">
+        <span className="font-mono text-xs text-[#a78bfa] tracking-widest uppercase">activity</span>
+        <div className="flex-1 h-px bg-[#3a3a3a]" />
+        <a
+          href="https://github.com/xxpwnxxx420lord"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-mono text-xs text-[#555] hover:text-[#888] flex items-center gap-1 transition-colors"
+        >
+          github <ArrowUpRight size={11} />
+        </a>
+      </div>
+
+      {/* Contribution calendar embed */}
+      <div className="mb-5 rounded-xl overflow-hidden border border-[#363636] bg-[#1a1a1a] p-4">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="https://ghchart.rshah.org/a78bfa/xxpwnxxx420lord"
+          alt="GitHub contribution chart"
+          className="w-full opacity-80"
+          style={{ imageRendering: "pixelated" }}
+        />
+      </div>
+
+      {loading ? (
+        <div className="space-y-2">
+          {[1,2,3,4].map((i) => (
+            <div key={i} className="h-10 bg-[#2a2a2a] rounded-lg animate-pulse" />
+          ))}
+        </div>
+      ) : events.length === 0 ? (
+        <p className="font-mono text-xs text-[#444] text-center py-6">no recent activity</p>
+      ) : (
+        <div className="space-y-1">
+          {events.map((e, i) => (
+            <div key={i} className="flex items-center justify-between px-4 py-2.5 bg-[#272727] rounded-lg">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <GitCommit size={11} className="text-[#a78bfa] shrink-0" />
+                <span className="text-xs text-[#888] truncate">{eventLabel(e)}</span>
+              </div>
+              <span className="font-mono text-[10px] text-[#444] shrink-0 ml-3">{timeAgo(e.created_at)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
   );
 }
 
-// ─── DATA ───
-const projects = [
-  {
-    num: "01",
-    title: "Cmd-XYZ",
-    tag: "Luau",
-    desc: "Roblox command system. Admin tools and script execution.",
-    url: "https://github.com/xxpwnxxx420lord/Cmd-XYZ",
-    year: "2024",
-  },
-  {
-    num: "02",
-    title: "Discord → Roblox",
-    tag: "Python + Luau",
-    desc: "WebSocket bridge — kick players from a Discord bot.",
-    url: "https://github.com/xxpwnxxx420lord/discord-to-roblox-kicking",
-    year: "2024",
-  },
-  {
-    num: "03",
-    title: "WebSocket Thing",
-    tag: "JavaScript",
-    desc: "Real-time WebSocket server experiments. 1 star.",
-    url: "https://github.com/xxpwnxxx420lord/websocketthing",
-    year: "2025",
-  },
-  {
-    num: "04",
-    title: "Nutho",
-    tag: "Luau",
-    desc: "You VS Homer — first Roblox game release. Still in beta.",
-    url: "https://github.com/xxpwnxxx420lord/Scripts",
-    year: "2025",
-  },
-  {
-    num: "05",
-    title: "Mini-Projects",
-    tag: "Luau",
-    desc: "Collection of Roblox exploit and utility scripts.",
-    url: "https://github.com/xxpwnxxx420lord/Scripts",
-    year: "2024",
-  },
-  {
-    num: "06",
-    title: "barnical",
-    tag: "Web",
-    desc: "Personal site. Live at barnical.github.io.",
-    url: "https://barnical.github.io",
-    year: "2025",
-  },
-];
+// ─── Random Project Modal ─────────────────────────────────────────────────────
 
-const skills = [
-  { name: "Luau", level: 75 },
-  { name: "Python", level: 37 },
-  { name: "JavaScript", level: 17 },
-];
-
-// ─── APP ───
-export default function Portfolio() {
-  const [hovered, setHovered] = useState(null);
-  const [loaded, setLoaded] = useState(false);
-  const [scramble, setScramble] = useState({});
-
-  useEffect(() => { setTimeout(() => setLoaded(true), 60); }, []);
+function RandomProjectModal({ onClose }: { onClose: () => void }) {
+  const pick = PROJECTS[Math.floor(Math.random() * PROJECTS.length)];
+  const [project] = useState(pick);
 
   return (
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500&display=swap');
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-          --bg: #0a0f0b;
-          --fg: #e8f0e9;
-          --muted: rgba(232,240,233,0.38);
-          --accent: #8be995;
-          --accent2: rgba(139,233,149,0.15);
-          --line: rgba(232,240,233,0.08);
-        }
-        html, body { background: var(--bg); color: var(--fg); font-family: 'Geist Mono', monospace; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-        a { color: inherit; text-decoration: none; }
-        ::selection { background: rgba(139,233,149,0.2); }
-        ::-webkit-scrollbar { width: 3px; }
-        ::-webkit-scrollbar-thumb { background: rgba(139,233,149,0.15); border-radius: 2px; }
-
-        @keyframes spark {
-          0%   { opacity:1; transform:translate(0,0) scale(1); }
-          100% { opacity:0; transform:translate(var(--dx),var(--dy)) scale(0); }
-        }
-        @keyframes fadeUp {
-          from { opacity:0; transform:translateY(18px); }
-          to   { opacity:1; transform:translateY(0); }
-        }
-        @keyframes lineGrow {
-          from { transform:scaleX(0); }
-          to   { transform:scaleX(1); }
-        }
-        @keyframes barFill {
-          from { width: 0; }
-          to   { width: var(--w); }
-        }
-        .project-row { transition: opacity 0.15s ease; }
-        .project-row:hover .row-num { color: var(--accent); }
-      `}</style>
-
-      <CursorBlob />
-
-      <div style={{
-        maxWidth: 700, margin: "0 auto", padding: "60px 28px 100px",
-        position: "relative", zIndex: 1,
-        opacity: loaded ? 1 : 0, transform: loaded ? "translateY(0)" : "translateY(16px)",
-        transition: "opacity 0.65s ease, transform 0.65s ease",
-      }}>
-
-        {/* NAV */}
-        <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 80 }}>
-          <Magnet>
-            <span style={{ fontFamily: "'Instrument Serif', serif", fontSize: 20, letterSpacing: "-0.01em" }}>
-              Johnny W
-            </span>
-          </Magnet>
-          <Magnet>
-            <a href="https://github.com/xxpwnxxx420lord" target="_blank" rel="noreferrer"
-              style={{
-                fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase",
-                color: "var(--accent)", border: "1px solid rgba(139,233,149,0.25)",
-                padding: "8px 16px", borderRadius: 2,
-                background: "rgba(139,233,149,0.04)",
-                transition: "background 0.2s",
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = "rgba(139,233,149,0.09)"}
-              onMouseLeave={e => e.currentTarget.style.background = "rgba(139,233,149,0.04)"}
-            >
-              GitHub ↗
-            </a>
-          </Magnet>
-        </nav>
-
-        {/* HERO */}
-        <section style={{ position: "relative", marginBottom: 96, paddingBottom: 72 }}>
-          <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
-            <ParticleCanvas />
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center px-4 pb-6 sm:pb-0" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      <div
+        className="relative bg-[#1e1e1e] border border-[#3a3a3a] rounded-2xl w-full max-w-md p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2">
+            <Shuffle size={13} className="text-[#a78bfa]" />
+            <span className="font-mono text-xs text-[#555]">random pick</span>
           </div>
-          <div style={{ position: "relative" }}>
-            <p style={{
-              fontSize: 10, letterSpacing: "0.22em", textTransform: "uppercase",
-              color: "var(--accent)", marginBottom: 26,
-              display: "flex", alignItems: "center", gap: 10,
-              animation: "fadeUp 0.5s ease 0.1s both",
-            }}>
-              <span style={{ display: "block", width: 18, height: 1, background: "var(--accent)" }} />
-              Syntaxical · Sydney, AU
-            </p>
+          <button onClick={onClose} className="text-[#555] hover:text-[#f0ede8] transition-colors cursor-pointer">
+            <X size={15} />
+          </button>
+        </div>
 
-            <h1 style={{
-              fontFamily: "'Instrument Serif', serif", fontWeight: 400,
-              fontSize: "clamp(44px, 9vw, 70px)", lineHeight: 1.02,
-              letterSpacing: "-0.025em", marginBottom: 24,
-            }}>
-              <BlurText text="I write scripts" delay={0.15} /><br />
-              <BlurText text="that" delay={0.3} />{" "}
-              <BlurText text="do things." delay={0.42} style={{ fontStyle: "italic", color: "var(--accent)" }} />
-            </h1>
+        <h2 className="text-xl font-light text-[#f0ede8] mb-2">{project.title}</h2>
+        <p className="text-sm text-[#777] leading-relaxed mb-4">{project.description}</p>
+        <div className="flex flex-wrap gap-1.5 mb-6">
+          {project.tags.map((t) => (
+            <span key={t} className="font-mono text-[10px] text-[#666] border border-[#363636] px-1.5 py-0.5 rounded">
+              {t}
+            </span>
+          ))}
+        </div>
 
-            <p style={{
-              fontSize: 13, lineHeight: 1.85, color: "var(--muted)",
-              maxWidth: 360, marginBottom: 42,
-              animation: "fadeUp 0.6s ease 0.65s both",
-            }}>
-              Luau dev making Roblox tools, Python automation, and whatever else sounds fun.
-              25 repos and counting.
-            </p>
+        <div className="flex items-center gap-2">
+          <a
+            href={project.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-md bg-[#f0ede8] text-[#232323] font-mono text-xs font-semibold hover:bg-white transition-colors"
+          >
+            <Github size={13} /> view repo
+          </a>
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-md border border-[#3a3a3a] text-[#666] font-mono text-xs hover:border-[#555] hover:text-[#f0ede8] transition-colors cursor-pointer"
+          >
+            dismiss
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-            <ClickSpark>
-              <Magnet strength={0.18}>
-                <a href="https://barnical.github.io" target="_blank" rel="noreferrer"
-                  style={{
-                    display: "inline-flex", alignItems: "center", gap: 10,
-                    fontSize: 11, letterSpacing: "0.11em", textTransform: "uppercase",
-                    color: "var(--bg)", background: "var(--accent)",
-                    padding: "13px 22px", borderRadius: 2,
-                    fontWeight: 500,
-                    transition: "opacity 0.2s",
-                    animation: "fadeUp 0.6s ease 0.85s both",
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
-                  onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-                >
-                  Visit Site →
-                </a>
-              </Magnet>
-            </ClickSpark>
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+export default function Portfolio() {
+  const [commitModal, setCommitModal] = useState<{ owner: string; repo: string; title: string } | null>(null);
+  const [showRandom, setShowRandom] = useState(false);
+
+  const closeCommit = useCallback(() => setCommitModal(null), []);
+
+  return (
+    <div className="min-h-screen bg-[#232323] text-[#f0ede8]">
+
+      {/* ── Modals ── */}
+      {showRandom && <RandomProjectModal onClose={() => setShowRandom(false)} />}
+      {commitModal && (
+        <CommitModal
+          owner={commitModal.owner}
+          repo={commitModal.repo}
+          title={commitModal.title}
+          onClose={closeCommit}
+        />
+      )}
+
+      {/* ── Nav ── */}
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-4 bg-[#232323]/70 backdrop-blur-md border-b border-[#3a3a3a]/40">
+        <div className="flex items-center gap-2">
+          <Terminal size={14} className="text-[#a78bfa]" />
+          <span className="font-mono text-sm">syntaxical</span>
+        </div>
+        <div className="hidden md:flex items-center gap-6 font-mono text-xs text-[#666]">
+          {["projects", "skills", "activity", "discord"].map((l) => (
+            <a key={l} href={`#${l}`} className="hover:text-[#f0ede8] transition-colors">{l}</a>
+          ))}
+          <Link href="/messages" className="hover:text-[#f0ede8] transition-colors">writing</Link>
+          <Link href="/built" className="hover:text-[#f0ede8] transition-colors">built</Link>
+        </div>
+        <a
+          href="https://github.com/xxpwnxxx420lord"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#f0ede8] text-[#232323] font-mono text-xs font-semibold hover:bg-white transition-colors"
+        >
+          <Github size={13} /> github
+        </a>
+      </nav>
+
+      {/* ── Hero with LiquidEther ── */}
+      <section className="relative w-full" style={{ height: "100vh", minHeight: 520 }}>
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <LiquidEther
+            colors={["#0d0520", "#3b1fa8", "#6d28d9", "#a78bfa", "#1a0a3d"]}
+            mouseForce={30}
+            cursorSize={120}
+            isViscous
+            viscous={25}
+            iterationsViscous={32}
+            iterationsPoisson={32}
+            resolution={0.4}
+            isBounce={false}
+            autoDemo
+            autoSpeed={0.35}
+            autoIntensity={2.8}
+            takeoverDuration={0.3}
+            autoResumeDelay={2000}
+            autoRampDuration={1.0}
+            style={{ width: "100%", height: "100%", display: "block" }}
+          />
+        </div>
+        <div className="absolute inset-0 z-10 bg-gradient-to-b from-[#232323]/40 via-transparent to-[#232323] pointer-events-none" />
+
+        <div className="relative z-20 flex flex-col justify-center h-full max-w-3xl mx-auto px-6 pointer-events-none">
+          <div className="flex items-center gap-2 mb-6">
+            <span className="w-2 h-2 rounded-full bg-[#4caf7d] animate-pulse" />
+            <span className="font-mono text-xs text-[#999]">sydney, au · available</span>
+          </div>
+          <h1 className="text-6xl font-light tracking-tight mb-3 leading-none">Syntaxical</h1>
+          <p className="text-xl text-[#bbb] font-light mb-4">
+            LuaU, Node, and python 💝
+          </p>
+          <p className="text-[#777] text-sm leading-relaxed max-w-md mb-8">
+            Hey! I'm Johnny (some may know me as syntaxical) I code cool stuff, mostly for fun. I have over 20+ Projects, and a countless amount of side projects, you can prob find just laying around.
+          </p>
+          <div className="flex items-center gap-3 pointer-events-auto">
+            <a
+              href="https://github.com/xxpwnxxx420lord"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-md bg-[#f0ede8] text-[#232323] font-mono text-xs font-semibold hover:bg-white transition-colors"
+            >
+              <Github size={14} /> github
+            </a>
+            <a
+              href="#discord"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-md border border-[#4a4a4a] text-[#aaa] font-mono text-xs hover:border-[#777] hover:text-[#f0ede8] transition-colors"
+            >
+              <MessageCircle size={14} /> discord
+            </a>
+            <button
+              onClick={() => setShowRandom(true)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-md border border-[#4a4a4a] text-[#aaa] font-mono text-xs hover:border-[#a78bfa] hover:text-[#a78bfa] transition-colors cursor-pointer"
+            >
+              <Shuffle size={14} /> random project
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Main ── */}
+      <main className="max-w-3xl mx-auto px-6 pb-24 space-y-20 pt-16">
+
+        {/* ── Quick links ── */}
+        <div className="grid grid-cols-2 gap-3">
+          <Link
+            href="/messages"
+            className="flex items-center gap-3 p-4 bg-[#2a2a2a] border border-[#363636] rounded-xl hover:border-[#a78bfa]/40 transition-colors group"
+          >
+            <BookOpen size={16} className="text-[#a78bfa]" />
+            <div>
+              <p className="text-sm font-medium text-[#f0ede8]">writing</p>
+              <p className="text-xs text-[#555]">guides & devlogs</p>
+            </div>
+            <ArrowUpRight size={13} className="text-[#444] group-hover:text-[#a78bfa] transition-colors ml-auto" />
+          </Link>
+          <Link
+            href="/built"
+            className="flex items-center gap-3 p-4 bg-[#2a2a2a] border border-[#363636] rounded-xl hover:border-[#a78bfa]/40 transition-colors group"
+          >
+            <Wrench size={16} className="text-[#a78bfa]" />
+            <div>
+              <p className="text-sm font-medium text-[#f0ede8]">things i&apos;ve built</p>
+              <p className="text-xs text-[#555]">deeper breakdown</p>
+            </div>
+            <ArrowUpRight size={13} className="text-[#444] group-hover:text-[#a78bfa] transition-colors ml-auto" />
+          </Link>
+        </div>
+
+        {/* ── Projects ── */}
+        <section id="projects">
+          <div className="flex items-center gap-3 mb-7">
+            <span className="font-mono text-xs text-[#a78bfa] tracking-widest uppercase">projects</span>
+            <div className="flex-1 h-px bg-[#3a3a3a]" />
+            <a
+              href="https://github.com/xxpwnxxx420lord"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-xs text-[#555] hover:text-[#888] flex items-center gap-1 transition-colors"
+            >
+              all repos <ArrowUpRight size={11} />
+            </a>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {PROJECTS.map((p) => (
+              <Card key={p.title} className="bg-[#2a2a2a] border border-[#363636] rounded-lg shadow-none hover:border-[#4a4a4a] transition-colors duration-200">
+                <CardBody className="p-5">
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="font-medium text-[#f0ede8] text-sm leading-snug">{p.title}</h3>
+                    <div className="flex items-center gap-2 ml-2 shrink-0">
+                      {/* Commits button */}
+                      <button
+                        onClick={() => setCommitModal({ owner: p.owner, repo: p.repo, title: p.title })}
+                        className="text-[#444] hover:text-[#a78bfa] transition-colors cursor-pointer"
+                        title="View commits"
+                      >
+                        <GitCommit size={13} />
+                      </button>
+                      <a href={p.href} target="_blank" rel="noopener noreferrer" className="text-[#555] hover:text-[#f0ede8] transition-colors">
+                        <Github size={13} />
+                      </a>
+                      {p.live && (
+                        <a href={p.live} target="_blank" rel="noopener noreferrer" className="text-[#555] hover:text-[#a78bfa] transition-colors">
+                          <ArrowUpRight size={13} />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                  <p className="text-xs text-[#777] leading-relaxed mb-3">{p.description}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {p.tags.map((t) => (
+                      <span key={t} className="font-mono text-[10px] text-[#666] border border-[#363636] px-1.5 py-0.5 rounded">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </CardBody>
+              </Card>
+            ))}
           </div>
         </section>
 
-        {/* PROJECTS HEADER */}
-        <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 28 }}>
-          <span style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--muted)", whiteSpace: "nowrap" }}>
-            Projects
-          </span>
-          <div style={{ flex: 1, height: 1, background: "var(--line)", transformOrigin: "left", animation: "lineGrow 0.9s ease 0.4s both" }} />
-        </div>
-
-        {/* PROJECT ROWS */}
-        <div style={{ marginBottom: 80 }}>
-          {projects.map((p, i) => (
-            <ClickSpark key={p.num}>
-              <a href={p.url} target="_blank" rel="noreferrer" style={{ display: "block" }}>
-                <div
-                  className="project-row"
-                  onMouseEnter={() => { setHovered(i); setScramble(s => ({ ...s, [i]: true })); }}
-                  onMouseLeave={() => { setHovered(null); setScramble(s => ({ ...s, [i]: false })); }}
-                  style={{
-                    display: "grid", gridTemplateColumns: "26px 1fr auto",
-                    alignItems: "start", gap: 18, padding: "24px 0",
-                    borderTop: "1px solid var(--line)",
-                    borderBottom: i === projects.length - 1 ? "1px solid var(--line)" : "none",
-                    opacity: hovered !== null && hovered !== i ? 0.22 : 1,
-                    cursor: "pointer",
-                  }}
-                >
-                  <span className="row-num" style={{ fontSize: 10, color: "var(--muted)", paddingTop: 3, transition: "color 0.15s" }}>
-                    {p.num}
+        {/* ── Skills ── */}
+        <section id="skills">
+          <div className="flex items-center gap-3 mb-7">
+            <span className="font-mono text-xs text-[#a78bfa] tracking-widest uppercase">skills</span>
+            <div className="flex-1 h-px bg-[#3a3a3a]" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+            <div>
+              <p className="font-mono text-[10px] text-[#555] uppercase tracking-wider mb-5">languages</p>
+              <div className="space-y-4">
+                {SKILLS.map((s) => <SkillBar key={s.label} {...s} />)}
+                <p className="font-mono text-[10px] text-[#444] mt-1">(estimates)</p>
+              </div>
+            </div>
+            <div>
+              <p className="font-mono text-[10px] text-[#555] uppercase tracking-wider mb-5">tools & tech</p>
+              <div className="flex flex-wrap gap-2">
+                {TOOLS.map((t) => (
+                  <span key={t} className="font-mono text-xs text-[#888] bg-[#2c2c2c] border border-[#363636] px-2.5 py-1 rounded-md">
+                    {t}
                   </span>
-                  <div>
-                    <div style={{
-                      fontFamily: "'Instrument Serif', serif", fontWeight: 400, fontSize: 24,
-                      letterSpacing: "-0.01em", marginBottom: 5,
-                      color: hovered === i ? "var(--accent)" : "var(--fg)",
-                      transition: "color 0.15s",
-                    }}>
-                      <ScrambleText text={p.title} trigger={scramble[i]} />
-                    </div>
-                    <div style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.6 }}>{p.desc}</div>
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 5, paddingTop: 3 }}>
-                    <span style={{
-                      fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase",
-                      color: "var(--accent)", border: "1px solid rgba(139,233,149,0.2)",
-                      padding: "3px 8px", borderRadius: 1, whiteSpace: "nowrap",
-                    }}>{p.tag}</span>
-                    <span style={{ fontSize: 10, color: "var(--muted)" }}>{p.year}</span>
-                  </div>
-                </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── GitHub Activity ── */}
+        <div id="activity">
+          <GitHubActivity />
+        </div>
+
+        {/* ── Discord ── */}
+        <section id="discord">
+          <div className="flex items-center gap-3 mb-7">
+            <span className="font-mono text-xs text-[#a78bfa] tracking-widest uppercase">discord</span>
+            <div className="flex-1 h-px bg-[#3a3a3a]" />
+          </div>
+          <div className="bg-[#2a2a2a] border border-[#363636] rounded-xl p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <MessageCircle size={14} className="text-[#a78bfa]" />
+                <span className="font-medium text-[#f0ede8] text-sm">hit me up on discord</span>
+              </div>
+              <p className="text-xs text-[#666] leading-relaxed max-w-xs">
+                best way to reach me. dm if you want to collab, have a project, or just want to chat.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <CopyDiscordButton />
+              <a
+                href="https://discord.com/users/1184740148487925851"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-md bg-[#5865f2] hover:bg-[#4752c4] text-white font-mono text-xs font-semibold transition-colors"
+              >
+                <ArrowUpRight size={13} /> open
               </a>
-            </ClickSpark>
-          ))}
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <footer className="border-t border-[#2e2e2e] px-6 py-5">
+        <div className="max-w-3xl mx-auto flex items-center justify-between">
+          <span className="font-mono text-xs text-[#3a3a3a]">syntaxical © {new Date().getFullYear()}</span>
+          <span className="font-mono text-xs text-[#3a3a3a]">sydney, au</span>
         </div>
-
-        {/* SKILLS */}
-        <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 28 }}>
-          <span style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--muted)", whiteSpace: "nowrap" }}>
-            Stack
-          </span>
-          <div style={{ flex: 1, height: 1, background: "var(--line)" }} />
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 18, marginBottom: 80 }}>
-          {skills.map((s, i) => (
-            <SkillBar key={s.name} skill={s} delay={i * 0.12} />
-          ))}
-        </div>
-
-        {/* FOOTER */}
-        <footer style={{
-          display: "flex", justifyContent: "space-between", alignItems: "center",
-          fontSize: 11, color: "var(--muted)",
-          borderTop: "1px solid var(--line)", paddingTop: 28,
-        }}>
-          <span>© 2026 Johnny W</span>
-          <a href="https://github.com/xxpwnxxx420lord" target="_blank" rel="noreferrer"
-            style={{ color: "var(--accent)", transition: "opacity 0.2s" }}
-            onMouseEnter={e => e.currentTarget.style.opacity = "0.65"}
-            onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-          >
-            xxpwnxxx420lord ↗
-          </a>
-        </footer>
-      </div>
-    </>
-  );
-}
-
-// ─── SKILL BAR ───
-function SkillBar({ skill, delay }: { skill: { name: string; level: number }; delay: number }) {
-  const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true); }, { threshold: 0.5 });
-    if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, []);
-  return (
-    <div ref={ref}>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8, fontSize: 11 }}>
-        <span style={{ letterSpacing: "0.08em" }}>{skill.name}</span>
-        <span style={{ color: "var(--muted)" }}>{skill.level}%</span>
-      </div>
-      <div style={{ height: 2, background: "var(--line)", borderRadius: 1, overflow: "hidden" }}>
-        <div style={{
-          height: "100%",
-          background: "var(--accent)",
-          borderRadius: 1,
-          width: visible ? `${skill.level}%` : "0%",
-          transition: `width 0.9s cubic-bezier(.23,1,.32,1) ${delay}s`,
-        }} />
-      </div>
+      </footer>
     </div>
   );
 }

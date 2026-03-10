@@ -3,7 +3,7 @@ import { HeroUIProvider } from "@heroui/react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Syntaxical's space",
+  title: "Johnny's space",
   description: "Main page is a portfolio, I'll add stuff other stuff later ig",
   openGraph: {
     images: ["https://images-ext-1.discordapp.net/external/SrxfW4yeu0AI5EKiBc0q6LvAb2tgTBfhAajEC3CQzNI/https/media.tenor.com/qbtP-__kJC0AAAPo/hypnosis-dog.mp4"], // relative to public folder

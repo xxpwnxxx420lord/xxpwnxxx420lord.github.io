@@ -1,45 +1,3 @@
-import fs from "fs";
-import path from "path";
-import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, Rss, BookOpen, Code2, Zap, Tag } from "lucide-react";
-
-interface Article {
-  slug: string;
-  title: string;
-  topic: string;
-  excerpt: string;
-}
-
-function getArticles(): Article[] {
-  const dir = path.join(process.cwd(), "messages");
-  if (!fs.existsSync(dir)) return [];
-
-  return fs.readdirSync(dir, { withFileTypes: true })
-    .filter(d => d.isDirectory())
-    .map(d => {
-      const slug = d.name;
-      const base = path.join(dir, slug);
-      const title = fs.existsSync(path.join(base, "title.txt"))
-        ? fs.readFileSync(path.join(base, "title.txt"), "utf-8").trim() : slug;
-      const topic = fs.existsSync(path.join(base, "topic.txt"))
-        ? fs.readFileSync(path.join(base, "topic.txt"), "utf-8").trim() : "misc";
-      // Pull a short excerpt from description.md
-      const md = fs.existsSync(path.join(base, "description.md"))
-        ? fs.readFileSync(path.join(base, "description.md"), "utf-8") : "";
-      const plain = md.replace(/#{1,6}\s/g,"").replace(/[*_`>\[\]]/g,"").replace(/\s+/g," ").trim();
-      const excerpt = plain.length > 120 ? plain.slice(0, 120).trimEnd() + "…" : plain;
-      return { slug, title, topic, excerpt };
-    });
-}
-
-const TOPIC_META: Record<string, { color: string; bg: string; border: string; icon: React.ReactNode; label: string }> = {
-  devlog:  { color: "#a78bfa", bg: "#a78bfa11", border: "#a78bfa33", icon: <Rss size={10}/>,      label: "devlog"  },
-  guide:   { color: "#60a5fa", bg: "#60a5fa11", border: "#60a5fa33", icon: <BookOpen size={10}/>, label: "guide"   },
-  misc:    { color: "#888",    bg: "#88888811", border: "#88888833", icon: <Code2 size={10}/>,    label: "misc"    },
-  update:  { color: "#fbbf24", bg: "#fbbf2411", border: "#fbbf2433", icon: <Zap size={10}/>,      label: "update"  },
-  release: { color: "#4caf7d", bg: "#4caf7d11", border: "#4caf7d33", icon: <Tag size={10}/>,      label: "release" },
-};
-
 export default function WritingPage() {
   const articles = getArticles();
 
@@ -115,7 +73,7 @@ export default function WritingPage() {
             })}
           </div>
         )}
-
-        {/* How to add */}
+      </div>
+    </div>
   );
 }

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // File: C:\Users\warre\Downloads\portfolio (5)\portfolio\app\layout.tsx
+=======
+// File: C:\Users\warre\Downloads\portfolio (4)\portfolio\app\layout.tsx
+>>>>>>> 34fcf759344da528bbd621a181544fba410569d4
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

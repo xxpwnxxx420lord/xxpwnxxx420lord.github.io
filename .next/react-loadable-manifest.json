@@ -7,6 +7,7 @@
       "static/chunks/_app-pages-browser_app_LiquidEther_jsx.js"
     ]
   },
+<<<<<<< HEAD
   "app\\playground\\page.tsx -> @monaco-editor/react": {
     "id": "app\\playground\\page.tsx -> @monaco-editor/react",
     "files": [
@@ -17,49 +18,83 @@
     "id": "node_modules\\@heroui\\react\\node_modules\\@heroui\\accordion\\dist\\chunk-CY6RTJSV.mjs -> @heroui/dom-animation",
     "files": [
       "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3430.js"
+=======
+  "node_modules\\@heroui\\react\\node_modules\\@heroui\\accordion\\dist\\chunk-CY6RTJSV.mjs -> @heroui/dom-animation": {
+    "id": "node_modules\\@heroui\\react\\node_modules\\@heroui\\accordion\\dist\\chunk-CY6RTJSV.mjs -> @heroui/dom-animation",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3431.js"
+>>>>>>> 34fcf759344da528bbd621a181544fba410569d4
     ]
   },
   "node_modules\\@heroui\\react\\node_modules\\@heroui\\calendar\\dist\\chunk-MNZWV6CN.mjs -> @heroui/dom-animation": {
     "id": "node_modules\\@heroui\\react\\node_modules\\@heroui\\calendar\\dist\\chunk-MNZWV6CN.mjs -> @heroui/dom-animation",
     "files": [
+<<<<<<< HEAD
       "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3430.js"
+=======
+      "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3431.js"
+>>>>>>> 34fcf759344da528bbd621a181544fba410569d4
     ]
   },
   "node_modules\\@heroui\\react\\node_modules\\@heroui\\modal\\dist\\chunk-NWAOTABO.mjs -> @heroui/dom-animation": {
     "id": "node_modules\\@heroui\\react\\node_modules\\@heroui\\modal\\dist\\chunk-NWAOTABO.mjs -> @heroui/dom-animation",
     "files": [
+<<<<<<< HEAD
       "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3430.js"
+=======
+      "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3431.js"
+>>>>>>> 34fcf759344da528bbd621a181544fba410569d4
     ]
   },
   "node_modules\\@heroui\\react\\node_modules\\@heroui\\navbar\\dist\\chunk-EGL3KBB2.mjs -> @heroui/dom-animation": {
     "id": "node_modules\\@heroui\\react\\node_modules\\@heroui\\navbar\\dist\\chunk-EGL3KBB2.mjs -> @heroui/dom-animation",
     "files": [
+<<<<<<< HEAD
       "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3430.js"
+=======
+      "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3431.js"
+>>>>>>> 34fcf759344da528bbd621a181544fba410569d4
     ]
   },
   "node_modules\\@heroui\\react\\node_modules\\@heroui\\navbar\\dist\\chunk-IWMNIPIV.mjs -> @heroui/dom-animation": {
     "id": "node_modules\\@heroui\\react\\node_modules\\@heroui\\navbar\\dist\\chunk-IWMNIPIV.mjs -> @heroui/dom-animation",
     "files": [
+<<<<<<< HEAD
       "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3430.js"
+=======
+      "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3431.js"
+>>>>>>> 34fcf759344da528bbd621a181544fba410569d4
     ]
   },
   "node_modules\\@heroui\\react\\node_modules\\@heroui\\popover\\dist\\chunk-NW7HJLND.mjs -> @heroui/dom-animation": {
     "id": "node_modules\\@heroui\\react\\node_modules\\@heroui\\popover\\dist\\chunk-NW7HJLND.mjs -> @heroui/dom-animation",
     "files": [
+<<<<<<< HEAD
       "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3430.js"
+=======
+      "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3431.js"
+>>>>>>> 34fcf759344da528bbd621a181544fba410569d4
     ]
   },
   "node_modules\\@heroui\\react\\node_modules\\@heroui\\popover\\dist\\chunk-Z57F4COC.mjs -> @heroui/dom-animation": {
     "id": "node_modules\\@heroui\\react\\node_modules\\@heroui\\popover\\dist\\chunk-Z57F4COC.mjs -> @heroui/dom-animation",
     "files": [
+<<<<<<< HEAD
       "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3430.js"
+=======
+      "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3431.js"
+>>>>>>> 34fcf759344da528bbd621a181544fba410569d4
     ]
   },
   "node_modules\\@heroui\\react\\node_modules\\@heroui\\ripple\\dist\\chunk-UIQI3AYJ.mjs -> @heroui/dom-animation": {
     "id": "node_modules\\@heroui\\react\\node_modules\\@heroui\\ripple\\dist\\chunk-UIQI3AYJ.mjs -> @heroui/dom-animation",
     "files": [
       "static/chunks/vendors-_app-pages-browser_node_modules_framer-motion_dist_es_render_dom_features-animation_mjs.js",
+<<<<<<< HEAD
       "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3431.js"
+=======
+      "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3430.js"
+>>>>>>> 34fcf759344da528bbd621a181544fba410569d4
     ]
   },
   "node_modules\\@heroui\\react\\node_modules\\@heroui\\toast\\dist\\chunk-Q4CRSQDG.mjs -> framer-motion": {
@@ -77,7 +112,11 @@
   "node_modules\\@heroui\\react\\node_modules\\@heroui\\tooltip\\dist\\chunk-AUA5GDXN.mjs -> @heroui/dom-animation": {
     "id": "node_modules\\@heroui\\react\\node_modules\\@heroui\\tooltip\\dist\\chunk-AUA5GDXN.mjs -> @heroui/dom-animation",
     "files": [
+<<<<<<< HEAD
       "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3430.js"
+=======
+      "static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_c3431.js"
+>>>>>>> 34fcf759344da528bbd621a181544fba410569d4
     ]
   }
 }

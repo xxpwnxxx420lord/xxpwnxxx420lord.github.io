@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // File: C:\Users\warre\Downloads\portfolio (5)\portfolio\app\api\github-activity\route.ts
+=======
+// File: C:\Users\warre\Downloads\portfolio (4)\portfolio\app\api\github-activity\route.ts
+>>>>>>> 34fcf759344da528bbd621a181544fba410569d4
 import * as entry from '../../../../../app/api/github-activity/route.js'
 import type { NextRequest } from 'next/server.js'
 

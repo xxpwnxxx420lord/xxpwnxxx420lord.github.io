@@ -117,19 +117,5 @@ export default function WritingPage() {
         )}
 
         {/* How to add */}
-        <div className="mt-16 p-5 bg-card border border-dashed border-border/60 rounded-xl">
-          <p className="font-mono text-[10px] text-muted-foreground/40 uppercase tracking-wider mb-3">adding a post</p>
-          <p className="text-xs text-muted-foreground/50 leading-relaxed">
-            Drop a folder in{" "}
-            <code className="text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-mono">/messages/your-slug/</code>
-            {" "}with{" "}
-            <code className="text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-mono">title.txt</code>,{" "}
-            <code className="text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-mono">topic.txt</code>,{" "}
-            <code className="text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-mono">description.md</code>, and optionally{" "}
-            <code className="text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-mono">image.png</code>.
-          </p>
-        </div>
-      </div>
-    </div>
   );
 }

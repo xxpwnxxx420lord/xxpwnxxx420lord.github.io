@@ -1,38 +1,18 @@
-# Dominion Devlog #1
+# But first what is a executor?
 
-So I started working on **Dominion** — a universal script aimed at FPS and TPS games on Roblox. The goal is simple: one script that works across a huge range of games without needing to patch it every update.
+A Roblox executor is a program that lets someone run custom Lua scripts inside the Roblox game client. Normally, Roblox games only run the code that the game developer included. An executor works by attaching itself to the Roblox client process and giving the user a way to inject and execute their own scripts while the game is running.
 
-## Why?
+Because Roblox games rely on communication between the client (your computer) and the server (the game host), modifying the client can change how the game behaves locally and sometimes send altered data to the server. This is why executors are often used for exploits or cheat.
 
-Most scripts are game-specific. They break the moment the developer pushes an update, or they rely on internal remotes that get renamed constantly. I wanted something more resilient.
+# How to download a 'hack box'
+go on voxlis.net and find a executor you'll like
 
-## Architecture
+**SUGGESTIONS**:
+    **PC**: 
+        **Free (No key)**: Velocity, Xeno, Solara
+        **Paid** : Potassium, Seliware, Wave, Bunni/
+    **MOBILE**: 
+        **Free (KEYED)**: Delta, Codex, Arcues X
+        **Paid** : idk ^^ but perm keys ig
 
-The core idea is a **detection layer** that fingerprints the game and routes to the right module:
-
-```lua
-local detector = Dominion.Detect()
-if detector.gameType == "FPS" then
-    Dominion.Load("fps_core")
-elseif detector.gameType == "TPS" then
-    Dominion.Load("tps_core")
-end
-```
-
-Each core module handles:
-
-- **Aimbot** — prediction-based, accounts for ping
-- **ESP** — box, skeleton, distance
-- **Misc** — speed, noclip, fly
-
-## Current Status
-
-Still WIP. The detection layer works on about 80% of tested games. The aimbot prediction needs more work — currently it undershoots at high ping.
-
-## Next Steps
-
-- Improve prediction algorithm
-- Add a config UI (probably reusing the Framework)
-- Test on more games
-
-More updates soon.
+After downloading the executor (and doing the key system if it has one) find the textbox and find a script you found of rscripts.net/scriptblox.com and boom your don eyay and now i can stop riting ts

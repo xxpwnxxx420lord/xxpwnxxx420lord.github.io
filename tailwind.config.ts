@@ -15,32 +15,58 @@ const config: Config = {
         sans: ["'DM Sans'", "sans-serif"],
       },
       colors: {
-        bg: "#232323",
-        surface: "#2c2c2c",
-        border: "#3a3a3a",
-        muted: "#888888",
-        accent: "#e2c882",
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
       },
     },
   },
   darkMode: "class",
-  plugins: [require("@tailwindcss/typography"), heroui({
-    themes: {
-      dark: {
-        colors: {
-          background: "#232323",
-          foreground: "#f0ede8",
-          primary: {
-            DEFAULT: "#e2c882",
-            foreground: "#232323",
-          },
-          default: {
-            DEFAULT: "#2c2c2c",
+  plugins: [
+    require("@tailwindcss/typography"),
+    heroui({
+      themes: {
+        dark: {
+          colors: {
+            background: "#232323",
             foreground: "#f0ede8",
+            primary: { DEFAULT: "#a78bfa", foreground: "#1a1a1a" },
+            default: { DEFAULT: "#2a2a2a", foreground: "#f0ede8" },
           },
         },
       },
-    },
-  })],
+    }),
+  ],
 };
 export default config;

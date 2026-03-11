@@ -2,25 +2,119 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  box-sizing: border-box;
+@layer base {
+  :root {
+    --background: 35 4% 14%;
+    --foreground: 30 15% 94%;
+    --card: 0 0% 16%;
+    --card-foreground: 30 15% 94%;
+    --popover: 0 0% 11%;
+    --popover-foreground: 30 15% 94%;
+    --primary: 260 80% 76%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 18%;
+    --secondary-foreground: 30 15% 94%;
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 53%;
+    --accent: 0 0% 18%;
+    --accent-foreground: 30 15% 94%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 30 15% 94%;
+    --border: 0 0% 22%;
+    --input: 0 0% 22%;
+    --ring: 260 80% 76%;
+    --radius: 0.5rem;
+  }
 }
 
-html {
-  scroll-behavior: smooth;
+@layer base {
+  * { box-sizing: border-box; border-color: hsl(var(--border)); }
+  body { background-color: hsl(var(--background)); color: hsl(var(--foreground)); }
 }
 
-body {
-  background-color: #232323;
+html { scroll-behavior: smooth; }
+::selection { background: #a78bfa33; color: #f0ede8; }
+
+/* ─── Keyframes ─── */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
 }
 
-::selection {
-  background: #e2c882;
-  color: #232323;
+/* Zoom in — already centered via translate(-50%,-50%), so we only scale+opacity */
+@keyframes cmd-in {
+  from { opacity: 0; transform: translate(-50%, calc(-50% - 12px)) scale(0.96); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
+@keyframes cmd-out {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to   { opacity: 0; transform: translate(-50%, calc(-50% - 8px)) scale(0.97); }
+}
+
+/* Dialog zoom (normal modals) */
+@keyframes modal-in {
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 6px)) scale(0.97); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes modal-out {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to   { opacity: 0; transform: translate(-50%, calc(-50% + 4px)) scale(0.98); }
+}
+
+/* Entrance animations for page sections */
+@keyframes enter-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes enter-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Toast */
+@keyframes slide-up {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* Hero stagger */
+@keyframes hero-line {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-cmd-in  { animation: cmd-in  0.18s cubic-bezier(0.16,1,0.3,1) forwards; }
+.animate-cmd-out { animation: cmd-out 0.12s ease-in forwards; }
+.animate-modal-in  { animation: modal-in  0.2s cubic-bezier(0.16,1,0.3,1) forwards; }
+.animate-modal-out { animation: modal-out 0.15s ease-in forwards; }
+.animate-fade-in  { animation: fade-in  0.15s ease forwards; }
+.animate-fade-out { animation: fade-out 0.12s ease forwards; }
+.animate-slide-up { animation: slide-up 0.2s ease forwards; }
+
+/* Section entrance — applied via JS IntersectionObserver */
+.will-animate {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.will-animate.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hero text stagger */
+.hero-word { opacity: 0; animation: hero-line 0.5s ease forwards; }
+.hero-word:nth-child(1) { animation-delay: 0.1s; }
+.hero-word:nth-child(2) { animation-delay: 0.18s; }
+.hero-word:nth-child(3) { animation-delay: 0.26s; }
+.hero-word:nth-child(4) { animation-delay: 0.34s; }
+.hero-word:nth-child(5) { animation-delay: 0.42s; }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+  .text-balance { text-wrap: balance; }
 }

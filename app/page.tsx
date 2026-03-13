@@ -39,30 +39,30 @@ const SKILLS = [
 ];
 const TOOLS = ["Roblox Studio","Three.js","Next.js","Node.js","WebSockets","Git","CSS / HTML","Rojo"];
 const PROJECTS = [
-  { title: "Framework",                    description: "LuaU GUI Framework.",                                                                         tags: ["LuaU","Roblox","Scripting"],          href: "https://github.com/xxpwnxxx420lord/Scripts/blob/main/framework.lua",           owner: "xxpwnxxx420lord",                    repo: "Scripts",               live: null },
-  { title: "Nutho",                         description: "Insanely good Roblox script (Discontinued).",                                                tags: ["LuaU","Roblox","Scripting"],          href: "https://github.com/xxpwnxxx420lord/Nutho",                                     owner: "xxpwnxxx420lord",                    repo: "Nutho",                 live: null },
-  { title: "Dominion",                      description: "WIP Roblox script with universal features for FPS/TPS games.",                               tags: ["LuaU","Roblox","Scripting"],          href: "https://github.com/xxpwnxxx420lord/Dominion",                                  owner: "xxpwnxxx420lord",                    repo: "Dominion",              live: null },
-  { title: "Cmd-XYZ",                       description: "Command framework built in LuaU. Modular design, easy to extend.",                           tags: ["LuaU","Framework"],                   href: "https://github.com/xxpwnxxx420lord/Cmd-XYZ",                                   owner: "xxpwnxxx420lord",                    repo: "Cmd-XYZ",               live: null },
-  { title: "Discord ↔ Roblox Controller",  description: "WebSocket bridge linking Discord bots to Roblox game servers in real-time.",                  tags: ["Python","WebSocket","Discord"],        href: "https://github.com/random-projects-coz-bored-and-ye/Websocket-Discord-bot",    owner: "random-projects-coz-bored-and-ye",   repo: "Websocket-Discord-bot", live: null },
-  { title: "websocketthing",                description: "JavaScript WebSocket experiment — lightweight, no deps, raw implementation.",                 tags: ["JavaScript","WebSocket"],             href: "https://github.com/xxpwnxxx420lord/websocketthing",                             owner: "xxpwnxxx420lord",                    repo: "websocketthing",        live: null },
-  { title: "5-Letter Username Sniper",      description: "Automated Roblox 5-character username availability checker.",                                 tags: ["Python","Roblox","Automation"],       href: "https://github.com/abusingroblox/5-letter-name-sniper",                         owner: "abusingroblox",                      repo: "5-letter-name-sniper",  live: null },
-  { title: "barnical",                      description: "One of the best Unblocked games websites — Hollow Knight, Getting Over It, and more!",       tags: ["HTML","CSS","JavaScript"],            href: "https://github.com/barnical/barnical.github.io",                                owner: "barnical",                           repo: "barnical.github.io",    live: "https://barnical.github.io" },
+  { title: "Framework",                   description: "LuaU GUI Framework.",                                                                        tags: ["LuaU","Roblox","Scripting"],         href: "https://github.com/xxpwnxxx420lord/Scripts/blob/main/framework.lua",          owner: "xxpwnxxx420lord",                   repo: "Scripts",               live: null },
+  { title: "Nutho",                        description: "Insanely good Roblox script (Discontinued).",                                               tags: ["LuaU","Roblox","Scripting"],         href: "https://github.com/xxpwnxxx420lord/Nutho",                                    owner: "xxpwnxxx420lord",                   repo: "Nutho",                 live: null },
+  { title: "Dominion",                     description: "WIP Roblox script with universal features for FPS/TPS games.",                              tags: ["LuaU","Roblox","Scripting"],         href: "https://github.com/xxpwnxxx420lord/Dominion",                                 owner: "xxpwnxxx420lord",                   repo: "Dominion",              live: null },
+  { title: "Cmd-XYZ",                      description: "Infinite Yield but with less features, and more features.",                          tags: ["LuaU","Framework"],                  href: "https://github.com/xxpwnxxx420lord/Cmd-XYZ",                                  owner: "xxpwnxxx420lord",                   repo: "Cmd-XYZ",               live: null },
+  { title: "barnical",                     description: "One of the best Unblocked games websites — Hollow Knight, Getting Over It, and more!",      tags: ["HTML","CSS","JavaScript"],           href: "https://github.com/barnical/barnical.github.io",                               owner: "barnical",                          repo: "barnical.github.io",    live: "https://barnical.github.io" },
+  { title: "And more...", description: "Check out the built tab",                 tags: [""],       href: "https://www.syntaxical.space/built",   owner: "xxpwnxxx420lord",  repo: "xxpwnxxx420lord.github.io", live: null },
+
 ];
 
 const KONAMI = ["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];
 
-// ─── Entrance animation hook ──────────────────────────────────────────────────
-
-function useEntranceAnim<T extends HTMLElement = HTMLElement>(opts?: { delay?: number }) {
+function useEntranceAnim<T extends HTMLElement = HTMLElement>(opts?: { delay?: number; threshold?: number }) {
   const ref = useRef<T>(null);
   useEffect(() => {
     const el = ref.current; if (!el) return;
     el.classList.add("will-animate");
     if (opts?.delay) el.style.transitionDelay = `${opts.delay}ms`;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { el.classList.add("in-view"); obs.disconnect(); } }, { threshold: 0.08 });
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { el.classList.add("in-view"); obs.disconnect(); } },
+      { threshold: opts?.threshold ?? 0.08 }
+    );
     obs.observe(el);
     return () => obs.disconnect();
-  }, [opts?.delay]);
+  }, [opts?.delay, opts?.threshold]);
   return ref;
 }
 
@@ -121,7 +121,9 @@ function Toast({ msg, onDone }: { msg: string; onDone: () => void }) {
 
 // ─── Modals ───────────────────────────────────────────────────────────────────
 
-function CommitModal({ owner, repo, title, open, onOpenChange }: { owner: string; repo: string; title: string; open: boolean; onOpenChange: (v: boolean) => void }) {
+function CommitModal({ owner, repo, title, open, onOpenChange }: {
+  owner: string; repo: string; title: string; open: boolean; onOpenChange: (v: boolean) => void;
+}) {
   const [commits, setCommits] = useState<Commit[]>([]); const [loading, setLoading] = useState(true);
   useEffect(() => {
     if (!open) return; setLoading(true);
@@ -130,19 +132,22 @@ function CommitModal({ owner, repo, title, open, onOpenChange }: { owner: string
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[70vh] flex flex-col p-0">
-        <DialogHeader><DialogTitle><GitBranch size={14} className="text-primary"/>{title}<span className="text-muted-foreground font-normal">/ commits</span></DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle><GitBranch size={14} className="text-primary"/>{title}<span className="text-muted-foreground font-normal">/ commits</span></DialogTitle>
+        </DialogHeader>
         <div className="overflow-y-auto flex-1">
           {loading ? <div className="p-6 space-y-3">{[1,2,3].map(i=><div key={i} className="h-12 bg-muted rounded-lg animate-pulse"/>)}</div>
-            : commits.length===0 ? <div className="p-10 text-center font-mono text-xs text-muted-foreground">no commits found</div>
-            : <div className="divide-y divide-border">{commits.map(c=>(
-              <a key={c.sha} href={c.html_url} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 px-6 py-4 hover:bg-accent/30 transition-colors group">
-                <GitCommit size={13} className="text-muted-foreground/30 mt-0.5 shrink-0 group-hover:text-primary transition-colors"/>
-                <div className="min-w-0 flex-1"><p className="text-xs text-foreground leading-relaxed truncate">{c.commit.message.split("\n")[0]}</p>
-                  <div className="flex items-center gap-2 mt-1"><span className="font-mono text-[10px] text-muted-foreground">{c.sha.slice(0,7)}</span><span className="text-border">·</span><Clock size={10} className="text-muted-foreground/30"/><span className="font-mono text-[10px] text-muted-foreground">{timeAgo(c.commit.author.date)}</span></div>
-                </div>
-                <ArrowUpRight size={12} className="text-muted-foreground/20 group-hover:text-primary transition-colors shrink-0 mt-1"/>
-              </a>
-            ))}</div>}
+          : commits.length===0 ? <div className="p-10 text-center font-mono text-xs text-muted-foreground">no commits found</div>
+          : <div className="divide-y divide-border">{commits.map(c=>(
+            <a key={c.sha} href={c.html_url} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 px-6 py-4 hover:bg-accent/30 transition-colors group">
+              <GitCommit size={13} className="text-muted-foreground/30 mt-0.5 shrink-0 group-hover:text-primary transition-colors"/>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs text-foreground leading-relaxed truncate">{c.commit.message.split("\n")[0]}</p>
+                <div className="flex items-center gap-2 mt-1"><span className="font-mono text-[10px] text-muted-foreground">{c.sha.slice(0,7)}</span><span className="text-border">·</span><Clock size={10} className="text-muted-foreground/30"/><span className="font-mono text-[10px] text-muted-foreground">{timeAgo(c.commit.author.date)}</span></div>
+              </div>
+              <ArrowUpRight size={12} className="text-muted-foreground/20 group-hover:text-primary transition-colors shrink-0 mt-1"/>
+            </a>
+          ))}</div>}
         </div>
       </DialogContent>
     </Dialog>
@@ -183,37 +188,40 @@ function KonamiModal({ open, onOpenChange }: { open: boolean; onOpenChange: (v: 
   );
 }
 
-// ─── Section header ───────────────────────────────────────────────────────────
+// ─── Components ───────────────────────────────────────────────────────────────
 
 function SectionHeader({ label, children }: { label: string; children?: React.ReactNode }) {
   return (
     <div className="flex items-center gap-3 mb-7">
       <span className="font-mono text-[11px] text-primary tracking-widest uppercase">{label}</span>
-      <Separator className="flex-1" />
+      <Separator className="flex-1"/>
       {children}
     </div>
   );
 }
 
-// ─── Skill bar ────────────────────────────────────────────────────────────────
-
 function SkillBar({ label, pct, color }: { label: string; pct: number; color: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [animated, setAnimated] = useState(false);
+  useEffect(() => {
+    const el = ref.current; if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setAnimated(true); obs.disconnect(); } }, { threshold: 0.3 });
+    obs.observe(el); return () => obs.disconnect();
+  }, []);
   return (
-    <div className="flex items-center gap-3">
+    <div ref={ref} className="flex items-center gap-3">
       <span className="font-mono text-xs text-foreground w-24 shrink-0">{label}</span>
       <div className="flex-1 h-[3px] bg-muted rounded-full overflow-hidden">
-        <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: color }} />
+        <div className="h-full rounded-full transition-all duration-1000 ease-out" style={{ width: animated ? `${pct}%` : "0%", backgroundColor: color }}/>
       </div>
       <span className="font-mono text-xs text-muted-foreground w-8 text-right">{pct}%</span>
     </div>
   );
 }
 
-// ─── GitHub Activity ──────────────────────────────────────────────────────────
-
 function GitHubActivity() {
   const [events, setEvents] = useState<GHEvent[]>([]); const [loading, setLoading] = useState(true);
-  const ref = useEntranceAnim<HTMLDivElement>();
+  const ref = useEntranceAnim<HTMLDivElement>({ delay: 60 });
   useEffect(() => {
     fetch("/api/github-activity").then(r=>r.json()).then(d=>{setEvents(Array.isArray(d)?d.slice(0,8):[]); setLoading(false);}).catch(()=>setLoading(false));
   }, []);
@@ -226,17 +234,19 @@ function GitHubActivity() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="https://ghchart.rshah.org/a78bfa/xxpwnxxx420lord" alt="GitHub contribution chart" className="w-full opacity-80" style={{imageRendering:"pixelated"}}/>
       </div>
-      {loading ? <div className="space-y-2">{[1,2,3,4].map(i=><div key={i} className="h-10 bg-muted rounded-lg animate-pulse"/>)}</div>
-        : events.length===0 ? <p className="font-mono text-xs text-muted-foreground text-center py-6">no recent activity</p>
-        : <div className="space-y-1">{events.map((e,i)=>(
-          <div key={i} className="flex items-center justify-between px-4 py-2.5 bg-card border border-border rounded-lg">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <GitCommit size={11} className="text-primary shrink-0"/>
-              <span className="text-xs text-muted-foreground truncate">{eventLabel(e)}</span>
-            </div>
-            <span className="font-mono text-[10px] text-muted-foreground/40 shrink-0 ml-3">{timeAgo(e.created_at)}</span>
+      {loading
+        ? <div className="space-y-2">{[1,2,3,4].map(i=><div key={i} className="h-10 bg-muted rounded-lg animate-pulse"/>)}</div>
+        : events.length===0
+          ? <p className="font-mono text-xs text-muted-foreground text-center py-6">no recent activity</p>
+          : <div className="space-y-1">
+            {events.map((e,i)=>(
+              <div key={i} className="flex items-center justify-between px-4 py-2.5 bg-card border border-border rounded-lg hover:border-muted/60 transition-colors">
+                <div className="flex items-center gap-2.5 min-w-0"><GitCommit size={11} className="text-primary shrink-0"/><span className="text-xs text-muted-foreground truncate">{eventLabel(e)}</span></div>
+                <span className="font-mono text-[10px] text-muted-foreground/40 shrink-0 ml-3">{timeAgo(e.created_at)}</span>
+              </div>
+            ))}
           </div>
-        ))}</div>}
+      }
     </section>
   );
 }
@@ -273,24 +283,26 @@ export default function Portfolio() {
   const konamiProgress = useRef(0);
   const typedBuffer = useRef("");
 
-  const quickLinksRef = useEntranceAnim<HTMLDivElement>();
-  const projectsRef   = useEntranceAnim<HTMLElement>({ delay: 40 });
-  const skillsRef     = useEntranceAnim<HTMLElement>({ delay: 40 });
-  const discordRef    = useEntranceAnim<HTMLElement>({ delay: 40 });
+  const quickLinksRef = useEntranceAnim<HTMLDivElement>({ delay: 0 });
+  const projectsRef   = useEntranceAnim<HTMLElement>({ delay: 60 });
+  const skillsRef     = useEntranceAnim<HTMLElement>({ delay: 60 });
+  const rscriptsRef   = useEntranceAnim<HTMLElement>({ delay: 60 });
+  const discordRef    = useEntranceAnim<HTMLElement>({ delay: 60 });
 
   useEffect(() => { const t = setTimeout(()=>setFluidMounted(true), 400); return ()=>clearTimeout(t); }, []);
-  useEffect(() => { const fn=()=>setScrolled(window.scrollY>10); window.addEventListener("scroll",fn,{passive:true}); return ()=>window.removeEventListener("scroll",fn); }, []);
-
+  useEffect(() => {
+    const fn=()=>setScrolled(window.scrollY>10);
+    window.addEventListener("scroll",fn,{passive:true}); return ()=>window.removeEventListener("scroll",fn);
+  }, []);
   useEffect(() => {
     const fn=(e:KeyboardEvent)=>{
       if (e.key===KONAMI[konamiProgress.current]) { konamiProgress.current++; if(konamiProgress.current===KONAMI.length){konamiProgress.current=0;setShowKonami(true);} } else konamiProgress.current=0;
     };
     window.addEventListener("keydown",fn); return ()=>window.removeEventListener("keydown",fn);
   }, []);
-
   useEffect(() => {
     const fn=(e:KeyboardEvent)=>{
-      if(e.key.length!==1)return;
+      if(e.key.length!==1) return;
       typedBuffer.current=(typedBuffer.current+e.key).slice(-8).toLowerCase();
       if(typedBuffer.current.includes("skid")){typedBuffer.current="";setToast("💀 lol u typed skid. at least ur self aware");}
       if(typedBuffer.current.includes("luau")){typedBuffer.current="";setToast("yes luau is a real language. no it's not 'just lua'");}
@@ -373,13 +385,16 @@ export default function Portfolio() {
         {/* ── Main ── */}
         <main className="max-w-3xl mx-auto px-6 pb-24 space-y-20 pt-16">
 
+          {/* Quick links */}
           <div ref={quickLinksRef} className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {[
               {href:"/messages", icon:BookOpen, label:"writing",    sub:"guides & devlogs"},
               {href:"/built",    icon:Wrench,   label:"built",      sub:"things i've made"},
               {href:"/playground",icon:Code2,   label:"playground", sub:"js, html, python"},
-            ].map(({href,icon:Icon,label,sub})=>(
-              <Link key={href} href={href} className="flex items-center gap-3 p-4 bg-card border border-border rounded-xl hover:border-primary/30 transition-colors group col-span-1">
+            ].map(({href,icon:Icon,label,sub},i)=>(
+              <Link key={href} href={href}
+                className="flex items-center gap-3 p-4 bg-card border border-border rounded-xl hover:border-primary/30 hover:-translate-y-0.5 transition-all duration-200 group col-span-1"
+                style={{transitionDelay:`${i*50}ms`}}>
                 <Icon size={15} className="text-primary shrink-0"/>
                 <div><p className="text-sm font-medium text-foreground">{label}</p><p className="text-xs text-muted-foreground">{sub}</p></div>
                 <ArrowUpRight size={13} className="text-muted-foreground/20 group-hover:text-primary transition-colors ml-auto"/>
@@ -394,7 +409,9 @@ export default function Portfolio() {
             </SectionHeader>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {PROJECTS.map((p,i)=>(
-                <Card key={p.title} className="hover:border-muted/50" style={{transitionDelay:`${i*30}ms`}}>
+                <Card key={p.title}
+                  className="hover:border-muted/50 hover:-translate-y-0.5 transition-all duration-200"
+                  style={{transitionDelay:`${i*25}ms`}}>
                   <CardContent className="p-5">
                     <div className="flex items-start justify-between mb-2">
                       <h3 className="font-medium text-foreground text-sm leading-snug">{p.title}</h3>
@@ -435,16 +452,52 @@ export default function Portfolio() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
               <div>
                 <p className="font-mono text-[10px] text-muted-foreground/50 uppercase tracking-wider mb-5">languages</p>
-                <div className="space-y-4">{SKILLS.map(s=><SkillBar key={s.label} {...s}/>)}<p className="font-mono text-[10px] text-muted-foreground/25 mt-1">(estimates)</p></div>
+                <div className="space-y-4">
+                  {SKILLS.map(s=><SkillBar key={s.label} {...s}/>)}
+                  <p className="font-mono text-[10px] text-muted-foreground/25 mt-1">(estimates)</p>
+                </div>
               </div>
               <div>
                 <p className="font-mono text-[10px] text-muted-foreground/50 uppercase tracking-wider mb-5">tools & tech</p>
-                <div className="flex flex-wrap gap-2">{TOOLS.map(t=><Badge key={t} className="text-xs px-2.5 py-1">{t}</Badge>)}</div>
+                <div className="flex flex-wrap gap-2">
+                  {TOOLS.map((t,i)=>(
+                    <Badge key={t} className="text-xs px-2.5 py-1 hover:border-primary/40 hover:text-primary transition-colors cursor-default"
+                      style={{transitionDelay:`${i*30}ms`}}>{t}</Badge>
+                  ))}
+                </div>
               </div>
             </div>
           </section>
 
           <GitHubActivity/>
+
+          {/* rscripts widget */}
+          <section ref={rscriptsRef}>
+            <SectionHeader label="rscripts"/>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+              <a href="https://rscripts.net/user/syntaxical" target="_blank" rel="noopener noreferrer"
+                className="hover:opacity-90 transition-opacity rounded-xl overflow-hidden shrink-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  alt="syntaxical on Rscripts"
+                  loading="lazy"
+                  width="360"
+                  height="132"
+                  src="https://rscripts.net/api/embed/user/syntaxical?theme=dark"
+                  className="rounded-xl"
+                />
+              </a>
+              <div>
+                <p className="text-sm font-medium text-foreground mb-1">find my scripts on rscripts</p>
+                <p className="text-xs text-muted-foreground leading-relaxed mb-3">Roblox scripts, exploits, and whatever else I&apos;ve published. Check the profile for the latest stuff.</p>
+                <Button variant="outline" size="sm" asChild>
+                  <a href="https://rscripts.net/user/syntaxical" target="_blank" rel="noopener noreferrer">
+                    view profile <ArrowUpRight size={12}/>
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </section>
 
           {/* Discord */}
           <section id="discord" ref={discordRef}>
@@ -457,7 +510,9 @@ export default function Portfolio() {
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <DiscordCopyButton/>
-                  <Button variant="discord" asChild><a href="https://discord.com/users/1184740148487925851" target="_blank" rel="noopener noreferrer"><ArrowUpRight size={13}/> open</a></Button>
+                  <Button variant="discord" asChild>
+                    <a href="https://discord.com/users/1184740148487925851" target="_blank" rel="noopener noreferrer"><ArrowUpRight size={13}/> open</a>
+                  </Button>
                 </div>
               </CardContent>
             </Card>

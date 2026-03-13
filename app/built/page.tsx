@@ -1,113 +1,62 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 
-interface BuiltItem {
-  name: string;
-  desc: string;
-  tags: string[];
-  href: string;
-  year?: string;
-}
-
-const BUILT: BuiltItem[] = [
-  { name: "Aimbot Prediction",        desc: "Velocity-based prediction accounting for ping and bullet travel time. Works without game-specific patching.",                   tags: ["LuaU","Math","Roblox"],          href: "https://github.com/xxpwnxxx420lord/Dominion",                                year: "2024" },
-  { name: "GUI Framework",            desc: "Drag-and-drop UI framework for Roblox scripts. Component system, theming, and event hooks built from scratch in LuaU.",        tags: ["LuaU","UI","Framework"],         href: "https://github.com/xxpwnxxx420lord/Scripts/blob/main/framework.lua",          year: "2024" },
-  { name: "Discord ↔ Roblox Bridge", desc: "Real-time bridge between Discord bots and Roblox game servers via WebSockets. Sub-200ms latency.",                             tags: ["Python","WebSocket","Discord"],   href: "https://github.com/random-projects-coz-bored-and-ye/Websocket-Discord-bot",   year: "2024" },
-  { name: "Cmd-XYZ",                  desc: "Modular admin command framework. Supports aliases, argument parsing, and permission levels.",                                   tags: ["LuaU","Framework","Roblox"],     href: "https://github.com/xxpwnxxx420lord/Cmd-XYZ",                                  year: "2023" },
-  { name: "Username Sniper",          desc: "Automated 5-letter Roblox username availability scanner. Logs hits instantly and handles ratelimiting.",                       tags: ["Python","Automation","Roblox"],  href: "https://github.com/abusingroblox/5-letter-name-sniper",                       year: "2023" },
-  { name: "Nutho",                    desc: "Feature-rich Roblox script with a solid core architecture. Discontinued — newer work lives in Dominion.",                      tags: ["LuaU","Roblox"],                 href: "https://github.com/xxpwnxxx420lord/Nutho",                                    year: "2023" },
-  { name: "Dominion",                 desc: "Universal FPS/TPS script designed to work cross-game without constant patching. Still actively worked on.",                    tags: ["LuaU","FPS","Roblox"],           href: "https://github.com/xxpwnxxx420lord/Dominion",                                 year: "2024" },
-  { name: "barnical",                 desc: "Unblocked games site. Hollow Knight, Getting Over It, and more — no trackers, no ads, just games.",                           tags: ["HTML","CSS","JS"],               href: "https://barnical.github.io",                                                  year: "2023" },
+const BUILT = [
+  { name: "Dominion",        desc: "Dominion Is a extremely good script with only universal supported but soon there will be more games...",                                       tags: ["LuaU", "Math",],       href: "https://github.com/xxpwnxxx420lord/Dominion" },
+  { name: "Nutho",        desc: "Discontinued roblox script which is really good (6 games)",                                       tags: ["LuaU", "Math",],       href: "https://github.com/xxpwnxxx420lord/Dominion" },
+  { name: "Barnical",        desc: "Overpowered fully (nearly) unblocked website with games like Hollow knight, getting over it, blood money, buckshot, REPO, etc",                                       tags: ["Https","Css","js","php"],       href: "https://Barnical.github.io" },
+  { name: "CMD-Xyz",        desc: "Infinite yield but with custom featurse, and rid of bloat",                                       tags: ["LuaU"],       href: "https://github.com/xxpwnxxx420lord/Cmd-XYZ" },
+  { name: "Media-Player",        desc: "Cool media player built in electron",                                       tags: ["Javascript","Node","Electron","Html","css"],       href: "https://github.com/random-projects-coz-bored-and-ye/Media-Player" },
+  { name: "Image-Fetcher",        desc: "Image fetcher built with Node.js (ai generated readme :sob:)",                                       tags: ["Node", "Google", "Axios"],       href: "https://github.com/random-projects-coz-bored-and-ye/NodeJs-ImageScraper" },
+  { name: "Websocket bot",        desc: "Discord to roblox websocket bot, so basically if you type 'sudo kill' and its properly configed and connected it will kill your player!",                                       tags: ["Node", "Python","Luau","Websocket"],       href: "https://github.com/random-projects-coz-bored-and-ye/Websocket-Discord-bot/tree/main" },
+  { name: "Wuno",        desc: "Shit old script i made in 2025 (Was obfuscated, But heres the src) ",                                       tags: ["Luau"],       href: "https://github.com/Old-Obfuscated-Scripts/ActualScripts/tree/main/Wuno" },
+  { name: "Gearz",        desc: "Shit old script i made in 2025 (Was obfuscated, But heres the src)!",                                       tags: ["Luau"],       href: "https://github.com/Old-Obfuscated-Scripts/ActualScripts/tree/main/Gearz" },
+  { name: "Webhook spoof",        desc: "Webhook spoofing I think i made (with emojis)",                                       tags: ["Luau"],       href: "http://github.com/Old-Obfuscated-Scripts/Random-Webhook-stuff/blob/main/webhookspoof" },
+  { name: "Next.js notes",        desc: "Some notes when i first was learning next.js with examples (1.0 - 1.4)",                                       tags: ["Node", "Typescript", "Next"],       href: "https://github.com/xxpwnxxx420lord/nextjs-notes?tab=readme-ov-file" },
+  { name: "5 letter username noter",        desc: "Spams the Roblox API with requests with random 5 letter combos",                                       tags: ["Python"],       href: "http://github.com/abusingroblox/5-letter-name-sniper" },
+  { name: "Random mod",        desc: "dum people playground mod i made",                                       tags: ["C#"],       href: "https://github.com/Tropxzz/Dumb-people-playground-mod-i-coded" },
+  { name: "Terror",        desc: "Discontinued open source roblox script",                                       tags: ["Luau"],       href: "https://github.com/Tropxzz/Terror" },
+  { name: "Omni-Admin",        desc: "Random open source admin thing",                                       tags: ["Luau"],       href: "https://github.com/Tropxzz/Scripts/blob/main/OmniAdmin.lua" },
+  { name: "Grape hub",        desc: "prolly like second or third ever script hub I made (Doesn't run) ",                                       tags: ["Luau"],       href: "http://github.com/Tropxzz/Scripts/blob/main/grape%20hub" },
+  { name: "Syn icons",        desc: "Plugin I made that sucks because I made a icon pack (1.6k+) ",                                       tags: ["Luau"],       href: "https://create.roblox.com/store/asset/117868479924873" },
+  { name: "Bloxfall",        desc: "Alright game I made until my friend ruined it with free models... ",                                       tags: ["Luau"],       href: "https://www.roblox.com/games/85230707189648/Blockfall" },
+  { name: "Recoil",        desc: "Fun gun game (Better with friends) ",                                       tags: ["Luau"],       href: "http://roblox.com/games/112520153651457/RECOIL" },
 ];
-
-const TAG_COLORS: Record<string, string> = {
-  LuaU:       "#a78bfa",
-  Python:     "#60a5fa",
-  JavaScript: "#fbbf24",
-  JS:         "#fbbf24",
-  HTML:       "#fb923c",
-  CSS:        "#34d399",
-  WebSocket:  "#22d3ee",
-  Discord:    "#818cf8",
-  Roblox:     "#f87171",
-};
 
 export default function BuiltPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="max-w-2xl mx-auto px-6 pt-16 pb-24">
-
-        {/* Back */}
-        <Link href="/" className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground/50 hover:text-foreground transition-colors mb-12">
-          <ArrowLeft size={12}/> back
-        </Link>
-
-        {/* Header */}
-        <div className="mb-2">
-          <span className="font-mono text-[10px] text-primary tracking-widest uppercase">built</span>
+      <div className="max-w-5xl mx-auto px-6 py-16">
+        <div className="mb-10">
+          <Link href="/" className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground/50 hover:text-foreground transition-colors mb-8">
+            <ArrowLeft size={12} /> back
+          </Link>
+          <h1 className="text-4xl font-light tracking-tight mb-2">things i&apos;ve built</h1>
+          <p className="text-muted-foreground text-sm">a deeper breakdown of what i&apos;ve shipped.</p>
         </div>
-        <h1 className="text-4xl font-light tracking-tight mb-3">things i&apos;ve shipped.</h1>
-        <p className="text-muted-foreground text-sm leading-relaxed max-w-sm mb-14">
-          a breakdown of notable stuff. mostly Roblox scripting, some Python, a bit of web.
-        </p>
 
-        {/* List */}
-        <div className="space-y-px">
-          {BUILT.map((item, i) => (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {BUILT.map((item) => (
             <a
               key={item.name}
               href={item.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-start gap-5 py-6 border-b border-border/50 hover:border-border transition-colors duration-150"
+              className="group flex flex-col p-4 bg-card border border-border rounded-xl hover:border-muted/60 transition-colors"
             >
-              {/* Number */}
-              <span className="font-mono text-xs text-muted-foreground/20 w-5 shrink-0 pt-0.5 select-none">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-
-              {/* Body */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-3 mb-1.5 flex-wrap">
-                  <h2 className="text-base font-medium text-foreground group-hover:text-primary transition-colors">
-                    {item.name}
-                  </h2>
-                  {item.year && (
-                    <span className="font-mono text-[10px] text-muted-foreground/30">{item.year}</span>
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground/60 leading-relaxed mb-3 max-w-md">
-                  {item.desc}
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {item.tags.map(t => {
-                    const color = TAG_COLORS[t] ?? "#888";
-                    return (
-                      <span
-                        key={t}
-                        className="font-mono text-[10px] px-1.5 py-0.5 rounded border"
-                        style={{ color, background: color + "11", borderColor: color + "33" }}
-                      >
-                        {t}
-                      </span>
-                    );
-                  })}
-                </div>
+              <div className="flex items-start justify-between mb-3">
+                <h2 className="text-sm font-medium text-foreground leading-snug flex-1 pr-2">{item.name}</h2>
+                <ArrowUpRight size={13} className="text-muted-foreground/30 group-hover:text-primary transition-colors shrink-0 mt-0.5" />
               </div>
-
-              {/* Arrow */}
-              <ArrowUpRight size={15} className="text-muted-foreground/20 group-hover:text-primary transition-colors shrink-0 mt-0.5"/>
+              <p className="text-xs text-muted-foreground leading-relaxed mb-4 flex-1">{item.desc}</p>
+              <div className="flex flex-wrap gap-1">
+                {item.tags.map((t) => (
+                  <span key={t} className="font-mono text-[9px] text-muted-foreground/50 border border-border px-1.5 py-0.5 rounded">{t}</span>
+                ))}
+              </div>
             </a>
           ))}
         </div>
-
-        {/* Footer note */}
-        <p className="mt-14 font-mono text-[10px] text-muted-foreground/25 text-center">
-          {BUILT.length} things · more on{" "}
-          <a href="https://github.com/xxpwnxxx420lord" target="_blank" rel="noopener noreferrer" className="hover:text-muted-foreground transition-colors underline underline-offset-2">
-            github
-          </a>
-        </p>
       </div>
     </div>
   );

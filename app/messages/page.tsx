@@ -1,73 +1,96 @@
-export default function WritingPage() {
+import fs from "fs";
+import path from "path";
+import Link from "next/link";
+import { ArrowLeft, ArrowUpRight, BookOpen, Code2, Rss, Zap, Tag } from "lucide-react";
+
+interface Article {
+  slug: string;
+  title: string;
+  topic: string;
+  hasImage: boolean;
+}
+
+function getArticles(): Article[] {
+  const messagesDir = path.join(process.cwd(), "messages");
+  if (!fs.existsSync(messagesDir)) return [];
+  return fs
+    .readdirSync(messagesDir, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => {
+      const slug = d.name;
+      const base = path.join(messagesDir, slug);
+      const title = fs.existsSync(path.join(base, "title.txt"))
+        ? fs.readFileSync(path.join(base, "title.txt"), "utf-8").trim()
+        : slug;
+      const topic = fs.existsSync(path.join(base, "topic.txt"))
+        ? fs.readFileSync(path.join(base, "topic.txt"), "utf-8").trim()
+        : "misc";
+      const hasImage = fs.existsSync(path.join(base, "image.png"));
+      return { slug, title, topic, hasImage };
+    });
+}
+
+const TOPIC_COLORS: Record<string, string> = {
+  devlog: "#a78bfa",
+  guide: "#60a5fa",
+  misc: "#888",
+  update: "#fbbf24",
+  release: "#4caf7d",
+};
+
+const TOPIC_ICONS: Record<string, React.ReactNode> = {
+  devlog: <Rss size={11} />,
+  guide: <BookOpen size={11} />,
+  misc: <Code2 size={11} />,
+  update: <Zap size={11} />,
+  release: <Tag size={11} />,
+};
+
+export default function MessagesPage() {
   const articles = getArticles();
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-
-      {/* Header */}
-      <div className="max-w-2xl mx-auto px-6 pt-16 pb-12">
-        <Link href="/" className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground/50 hover:text-foreground transition-colors mb-12">
-          <ArrowLeft size={12}/> back
-        </Link>
-
-        <div className="mb-2">
-          <span className="font-mono text-[10px] text-primary tracking-widest uppercase">writing</span>
+      <div className="max-w-3xl mx-auto px-6 py-16">
+        <div className="mb-10">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground/50 hover:text-foreground transition-colors mb-8"
+          >
+            <ArrowLeft size={12} /> back
+          </Link>
+          <h1 className="text-4xl font-light tracking-tight mb-2">writing</h1>
+          <p className="text-muted-foreground text-sm">guides, devlogs, and whatever else.</p>
         </div>
-        <h1 className="text-4xl font-light tracking-tight mb-3">
-          guides, devlogs,<br/>and whatever else.
-        </h1>
-        <p className="text-muted-foreground text-sm leading-relaxed max-w-sm">
-          stuff I figured out the hard way. code, architecture, random things worth writing down.
-        </p>
-      </div>
 
-      {/* Articles */}
-      <div className="max-w-2xl mx-auto px-6 pb-24">
         {articles.length === 0 ? (
-          <div className="border border-dashed border-border rounded-2xl p-16 text-center">
-            <p className="font-mono text-xs text-muted-foreground/30">nothing here yet.</p>
+          <div className="border border-border rounded-xl p-10 text-center">
+            <p className="font-mono text-xs text-muted-foreground/40">no articles yet.</p>
           </div>
         ) : (
-          <div className="space-y-px">
-            {articles.map((a, i) => {
-              const meta = TOPIC_META[a.topic] ?? TOPIC_META.misc;
+          <div className="space-y-2">
+            {articles.map((a) => {
+              const color = TOPIC_COLORS[a.topic] || "#888";
+              const icon = TOPIC_ICONS[a.topic] || <Code2 size={11} />;
               return (
                 <Link
                   key={a.slug}
                   href={`/messages/${a.slug}`}
-                  className="group flex items-start gap-5 py-6 border-b border-border/50 hover:border-border transition-colors duration-200"
-                  style={{ animationDelay: `${i * 60}ms` }}
+                  className="group flex items-center justify-between p-5 bg-card border border-border rounded-xl hover:border-muted/60 transition-all duration-200"
                 >
-                  {/* Index number */}
-                  <span className="font-mono text-xs text-muted-foreground/20 w-5 shrink-0 pt-0.5 select-none">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span
-                        className="inline-flex items-center gap-1 font-mono text-[10px] px-1.5 py-0.5 rounded border"
-                        style={{ color: meta.color, background: meta.bg, borderColor: meta.border }}
-                      >
-                        {meta.icon} {meta.label}
-                      </span>
-                    </div>
-                    <h2 className="text-base font-medium text-foreground group-hover:text-primary transition-colors mb-1.5 leading-snug">
+                  <div className="flex items-center gap-4 min-w-0">
+                    <span
+                      className="flex items-center gap-1 font-mono text-[10px] px-2 py-1 rounded-md border shrink-0"
+                      style={{ color, borderColor: color + "44", background: color + "11" }}
+                    >
+                      {icon}
+                      {a.topic}
+                    </span>
+                    <span className="text-sm text-foreground truncate group-hover:text-primary transition-colors">
                       {a.title}
-                    </h2>
-                    {a.excerpt && (
-                      <p className="text-xs text-muted-foreground/60 leading-relaxed line-clamp-2">
-                        {a.excerpt}
-                      </p>
-                    )}
+                    </span>
                   </div>
-
-                  {/* Arrow */}
-                  <ArrowUpRight
-                    size={15}
-                    className="text-muted-foreground/20 group-hover:text-primary transition-colors shrink-0 mt-1"
-                  />
+                  <ArrowUpRight size={14} className="text-muted-foreground/30 group-hover:text-primary transition-colors shrink-0 ml-4" />
                 </Link>
               );
             })}

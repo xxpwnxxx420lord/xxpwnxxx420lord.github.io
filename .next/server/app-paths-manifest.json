@@ -1,6 +1,9 @@
 {
   "/page": "app/page.js",
-  "/api/github-activity/route": "app/api/github-activity/route.js",
   "/api/visitors/route": "app/api/visitors/route.js",
-  "/built/page": "app/built/page.js"
+  "/messages/page": "app/messages/page.js",
+  "/api/github-activity/route": "app/api/github-activity/route.js",
+  "/playground/page": "app/playground/page.js",
+  "/built/page": "app/built/page.js",
+  "/messages/[slug]/page": "app/messages/[slug]/page.js"
 }

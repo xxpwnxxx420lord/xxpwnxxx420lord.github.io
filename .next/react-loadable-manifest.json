@@ -7,6 +7,12 @@
       "static/chunks/_app-pages-browser_app_LiquidEther_jsx.js"
     ]
   },
+  "app\\playground\\page.tsx -> @monaco-editor/react": {
+    "id": "app\\playground\\page.tsx -> @monaco-editor/react",
+    "files": [
+      "static/chunks/vendors-_app-pages-browser_node_modules_monaco-editor_react_dist_index_mjs.js"
+    ]
+  },
   "node_modules\\@heroui\\react\\node_modules\\@heroui\\accordion\\dist\\chunk-CY6RTJSV.mjs -> @heroui/dom-animation": {
     "id": "node_modules\\@heroui\\react\\node_modules\\@heroui\\accordion\\dist\\chunk-CY6RTJSV.mjs -> @heroui/dom-animation",
     "files": [

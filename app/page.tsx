@@ -16,6 +16,16 @@ import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
+// React Bits components
+import {
+  TextScramble,
+  SpotlightCard,
+  MagneticButton,
+  Floating,
+  StaggerItem,
+  SimpleAnimatedGrid,
+} from "@/components/reactbits";
+
 const LiquidEther = dynamic(() => import("./LiquidEther"), { ssr: false });
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -323,6 +333,7 @@ export default function Portfolio() {
 
         {showMatrix && <MatrixRain onDone={()=>setShowMatrix(false)}/>}
         {toast && <Toast msg={toast} onDone={()=>setToast(null)}/>}
+        <SimpleAnimatedGrid />
 
         <RandomModal open={showRandom} onOpenChange={setShowRandom}/>
         <KonamiModal open={showKonami} onOpenChange={setShowKonami}/>
@@ -369,15 +380,23 @@ export default function Portfolio() {
               <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"/>
               <span className="font-mono text-xs text-muted-foreground">sydney, au · available</span>
             </div>
-            <h1 className="hero-word text-6xl font-light tracking-tight mb-3 leading-none">Syntaxical</h1>
+            <h1 className="hero-word text-6xl font-light tracking-tight mb-3 leading-none">
+              <TextScramble text="Syntaxical" className="text-foreground" duration={1500} />
+            </h1>
             <p className="hero-word text-xl text-muted-foreground font-light mb-4">LuaU, Node, and python 💝</p>
             <p className="hero-word text-muted-foreground text-sm leading-relaxed max-w-md mb-8">
               Hey! I&apos;m Johnny (some may know me as syntaxical) I code cool stuff, mostly for fun. I have over 20+ Projects, and a countless amount of side projects, you can prob find just laying around.
             </p>
             <div className="hero-word flex flex-wrap items-center gap-3 pointer-events-auto">
-              <Button asChild><a href="https://github.com/xxpwnxxx420lord" target="_blank" rel="noopener noreferrer"><Github size={14}/> github</a></Button>
-              <Button variant="outline" asChild><a href="#discord"><MessageCircle size={14}/> discord</a></Button>
-              <Button variant="purple" onClick={()=>setShowRandom(true)}><Shuffle size={14}/> random project</Button>
+              <MagneticButton className="inline-block">
+                <Button asChild><a href="https://github.com/xxpwnxxx420lord" target="_blank" rel="noopener noreferrer"><Github size={14}/> github</a></Button>
+              </MagneticButton>
+              <MagneticButton className="inline-block">
+                <Button variant="outline" asChild><a href="#discord"><MessageCircle size={14}/> discord</a></Button>
+              </MagneticButton>
+              <MagneticButton className="inline-block">
+                <Button variant="purple" onClick={()=>setShowRandom(true)}><Shuffle size={14}/> random project</Button>
+              </MagneticButton>
             </div>
           </div>
         </section>
@@ -392,13 +411,15 @@ export default function Portfolio() {
               {href:"/built",    icon:Wrench,   label:"built",      sub:"things i've made"},
               {href:"/playground",icon:Code2,   label:"playground", sub:"js, html, python"},
             ].map(({href,icon:Icon,label,sub},i)=>(
-              <Link key={href} href={href}
-                className="flex items-center gap-3 p-4 bg-card border border-border rounded-xl hover:border-primary/30 hover:-translate-y-0.5 transition-all duration-200 group col-span-1"
-                style={{transitionDelay:`${i*50}ms`}}>
-                <Icon size={15} className="text-primary shrink-0"/>
-                <div><p className="text-sm font-medium text-foreground">{label}</p><p className="text-xs text-muted-foreground">{sub}</p></div>
-                <ArrowUpRight size={13} className="text-muted-foreground/20 group-hover:text-primary transition-colors ml-auto"/>
-              </Link>
+              <Floating key={href} delay={i * 0.2} distance={5} duration={3 + i * 0.5}>
+                <Link href={href}
+                  className="flex items-center gap-3 p-4 bg-card border border-border rounded-xl hover:border-primary/30 hover:-translate-y-0.5 transition-all duration-200 group col-span-1 h-full"
+                  style={{transitionDelay:`${i*50}ms`}}>
+                  <Icon size={15} className="text-primary shrink-0"/>
+                  <div><p className="text-sm font-medium text-foreground">{label}</p><p className="text-xs text-muted-foreground">{sub}</p></div>
+                  <ArrowUpRight size={13} className="text-muted-foreground/20 group-hover:text-primary transition-colors ml-auto"/>
+                </Link>
+              </Floating>
             ))}
           </div>
 
@@ -409,39 +430,39 @@ export default function Portfolio() {
             </SectionHeader>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {PROJECTS.map((p,i)=>(
-                <Card key={p.title}
-                  className="hover:border-muted/50 hover:-translate-y-0.5 transition-all duration-200"
-                  style={{transitionDelay:`${i*25}ms`}}>
-                  <CardContent className="p-5">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-medium text-foreground text-sm leading-snug">{p.title}</h3>
-                      <div className="flex items-center gap-1 ml-2 shrink-0">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button onClick={()=>setCommitModal({owner:p.owner,repo:p.repo,title:p.title})} className="p-1 text-muted-foreground/30 hover:text-primary transition-colors cursor-pointer rounded"><GitCommit size={13}/></button>
-                          </TooltipTrigger>
-                          <TooltipContent>view commits</TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <a href={p.href} target="_blank" rel="noopener noreferrer" className="p-1 text-muted-foreground/30 hover:text-foreground transition-colors rounded"><Github size={13}/></a>
-                          </TooltipTrigger>
-                          <TooltipContent>view repo</TooltipContent>
-                        </Tooltip>
-                        {p.live && (
+                <StaggerItem key={p.title} index={i}>
+                  <SpotlightCard className="h-full">
+                    <div className="p-5">
+                      <div className="flex items-start justify-between mb-2">
+                        <h3 className="font-medium text-foreground text-sm leading-snug">{p.title}</h3>
+                        <div className="flex items-center gap-1 ml-2 shrink-0">
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <a href={p.live} target="_blank" rel="noopener noreferrer" className="p-1 text-muted-foreground/30 hover:text-primary transition-colors rounded"><ArrowUpRight size={13}/></a>
+                              <button onClick={()=>setCommitModal({owner:p.owner,repo:p.repo,title:p.title})} className="p-1 text-muted-foreground/30 hover:text-primary transition-colors cursor-pointer rounded"><GitCommit size={13}/></button>
                             </TooltipTrigger>
-                            <TooltipContent>live site</TooltipContent>
+                            <TooltipContent>view commits</TooltipContent>
                           </Tooltip>
-                        )}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <a href={p.href} target="_blank" rel="noopener noreferrer" className="p-1 text-muted-foreground/30 hover:text-foreground transition-colors rounded"><Github size={13}/></a>
+                            </TooltipTrigger>
+                            <TooltipContent>view repo</TooltipContent>
+                          </Tooltip>
+                          {p.live && (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <a href={p.live} target="_blank" rel="noopener noreferrer" className="p-1 text-muted-foreground/30 hover:text-primary transition-colors rounded"><ArrowUpRight size={13}/></a>
+                              </TooltipTrigger>
+                              <TooltipContent>live site</TooltipContent>
+                            </Tooltip>
+                          )}
+                        </div>
                       </div>
+                      <p className="text-xs text-muted-foreground leading-relaxed mb-3">{p.description}</p>
+                      <div className="flex flex-wrap gap-1.5">{p.tags.map(t=><Badge key={t}>{t}</Badge>)}</div>
                     </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed mb-3">{p.description}</p>
-                    <div className="flex flex-wrap gap-1.5">{p.tags.map(t=><Badge key={t}>{t}</Badge>)}</div>
-                  </CardContent>
-                </Card>
+                  </SpotlightCard>
+                </StaggerItem>
               ))}
             </div>
           </section>
@@ -502,20 +523,24 @@ export default function Portfolio() {
           {/* Discord */}
           <section id="discord" ref={discordRef}>
             <SectionHeader label="discord"/>
-            <Card>
-              <CardContent className="p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+            <SpotlightCard>
+              <div className="p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                 <div>
                   <div className="flex items-center gap-2 mb-2"><MessageCircle size={14} className="text-primary"/><span className="font-medium text-foreground text-sm">hit me up on discord</span></div>
                   <p className="text-xs text-muted-foreground leading-relaxed max-w-xs">best way to reach me. dm if you want to collab, have a project, or just want to chat.</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  <DiscordCopyButton/>
-                  <Button variant="discord" asChild>
-                    <a href="https://discord.com/users/1184740148487925851" target="_blank" rel="noopener noreferrer"><ArrowUpRight size={13}/> open</a>
-                  </Button>
+                  <MagneticButton className="inline-block">
+                    <DiscordCopyButton/>
+                  </MagneticButton>
+                  <MagneticButton className="inline-block">
+                    <Button variant="discord" asChild>
+                      <a href="https://discord.com/users/1184740148487925851" target="_blank" rel="noopener noreferrer"><ArrowUpRight size={13}/> open</a>
+                    </Button>
+                  </MagneticButton>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </SpotlightCard>
           </section>
 
         </main>

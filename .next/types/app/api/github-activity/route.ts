@@ -1,4 +1,4 @@
-// File: C:\Users\adven\Downloads\portfolio (1)\portfolio\app\api\github-activity\route.ts
+// File: C:\Users\warre\Music\Code\TypeScripr\xxpwnxxx420lord.github.io\app\api\github-activity\route.ts
 import * as entry from '../../../../../app/api/github-activity/route.js'
 import type { NextRequest } from 'next/server.js'
 

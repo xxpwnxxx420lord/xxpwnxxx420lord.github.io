@@ -1,1 +1,7 @@
 node_modules
+.next
+.claude
+.claude_cache
+.mcp.json
+tsconfig.json
+.next

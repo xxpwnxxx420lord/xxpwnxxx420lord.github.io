@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowUpRight } from "lucide-react";
 
 const BUILT = [
   { name: "Dominion",        desc: "Dominion Is a extremely good script with only universal supported but soon there will be more games...",                                       tags: ["LuaU", "Math",],       href: "https://github.com/xxpwnxxx420lord/Dominion" },
+  { name: "EXP SELFBOT",        desc: "Discrod self bot for getting xp, and balance in EXP",                                       tags: ["Py",],       href: "https://github.com/random-projects-coz-bored-and-ye/EXP-Selfbot/tree/main" },
   { name: "Nutho",        desc: "Discontinued roblox script which is really good (6 games)",                                       tags: ["LuaU", "Math",],       href: "https://github.com/xxpwnxxx420lord/Dominion" },
   { name: "Barnical",        desc: "Overpowered fully (nearly) unblocked website with games like Hollow knight, getting over it, blood money, buckshot, REPO, etc",                                       tags: ["Https","Css","js","php"],       href: "https://Barnical.github.io" },
   { name: "CMD-Xyz",        desc: "Infinite yield but with custom featurse, and rid of bloat",                                       tags: ["LuaU"],       href: "https://github.com/xxpwnxxx420lord/Cmd-XYZ" },
